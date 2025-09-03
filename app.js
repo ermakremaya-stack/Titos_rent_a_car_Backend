@@ -3,13 +3,13 @@ import express from 'express';
 import cors from 'cors';
 
 //Importar las rutas
-import rutasAlquiler from './routes/Alquiler.routes.js';
-import rutasCliente from './routes/Cliente.routes.js';
-import rutasCoche from './routes/Coche.routes.js';
-import rutasDetalleAlquiler from './routes/DetalleAlquiler.routes.js';
-import rutasDetalleMantenimiento from './routes/DetalleMantenimiento.routes.js';
-import rutasEmpleado from './routes/Empleado.routes.js';
-import rutasMantenimiento from './routes/Mantenimiento.routes.js';
+import rutasAlquiler from './src/routes/Alquiler.routes.js';
+import rutasCliente from './src/routes/Cliente.routes.js';
+import rutasCoche from './src/routes/Coche.routes.js';
+import rutasDetalleAlquiler from './src/routes/Detalle_Alquiler.routes.js';
+import rutasDetalleMantenimiento from './src/routes/Detalle_Mantenimiento.routes.js';
+import rutasEmpleado from './src/routes/Empleado.routes.js';
+import rutasMantenimiento from './src/routes/Mantenimiento.routes.js';
 
 // Crear la aplicación de Express
 const app = express();

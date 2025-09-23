@@ -49,3 +49,22 @@ export const registrarCoche = async (req, res) => {
     }
 };
 
+
+// Eliminar un coche por su ID
+export const eliminarCoche = async (req, res) => {
+    try {
+        const [result] = await pool.query('DELETE FROM Coche WHERE Id_Coche = ?', [req.params.Id_Coche]);
+        if (result.affectedRows <= 0) {
+            return res.status(404).json({
+                mensaje: `Error al eliminar. ID ${req.params.Id_Coche} no encontrado.`
+            });
+        }
+        //Respueesta exitosa
+        res.sendStatus(204).send();
+    } catch (error) {
+        return res.status(500).json({
+            mensaje: 'Ha ocurrido un error al eliminar el coche.',
+            error: error
+        });
+    }
+};

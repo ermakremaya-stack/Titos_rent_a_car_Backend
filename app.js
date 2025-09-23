@@ -4,7 +4,7 @@ import cors from 'cors';
 
 //Importar las rutas
 import rutasAlquiler from './src/routes/Alquiler.routes.js';
-import rutasCliente from './src/routes/Cliente.routes.js';
+import rutasUsuario from './src/routes/Usuario.routes.js';
 import rutasCoche from './src/routes/Coche.routes.js';
 import rutasDetalleAlquiler from './src/routes/Detalle_Alquiler.routes.js';
 import rutasDetalleMantenimiento from './src/routes/Detalle_Mantenimiento.routes.js';
@@ -26,7 +26,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 //Rotas;
 app.use('/api', rutasAlquiler);
-app.use('/api', rutasCliente);
+app.use('/api', rutasUsuario);
 app.use('/api', rutasCoche);
 app.use('/api', rutasDetalleAlquiler);
 app.use('/api', rutasDetalleMantenimiento);

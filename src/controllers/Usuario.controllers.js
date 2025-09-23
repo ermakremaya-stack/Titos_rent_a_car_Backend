@@ -93,16 +93,17 @@ export const actualizarCliente = async (req, res) => {
 // Eliminar usuario por ID
 export const eliminarUsuario = async (req, res) => {
     try {
-        const { id } = req.params;
-        const [result] = await pool.query('DELETE FROM Usuario WHERE Id_Usuario = ?', [id]);
-        if (result.affectedRows === 0) {
+        const [result] = await pool.query('DELETE FROM Usuario WHERE Id_Usuario = ?', [req.params.Id_Usuario]);
+        if (result.affectedRows <= 0) {
             return res.status(404).json({
-                mensaje: 'Usuario no encontrado.'
+                mensaje: `Error al eliminar. ID ${req.params.Id_Usuario} no encontrado.`
             });
-        }   res.json({ mensaje: 'Usuario eliminado correctamente.' }); 
+        }
+        //Respueesta exitosa
+        res.sendStatus(204).send();
     } catch (error) {
         return res.status(500).json({
-            mensaje: 'Ha ocurrido un error al eliminar el usuario.', 
+            mensaje: 'Ha ocurrido un error al eliminar el Usuario.',
             error: error
         });
     }

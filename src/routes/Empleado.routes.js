@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { obtenerEmpleados, obtenerEmpleado, registrarEmpleado } from '../controllers/Empleado.controllers.js';
+import { obtenerEmpleados, obtenerEmpleado, registrarEmpleado, eliminarEmpleado } from '../controllers/Empleado.controllers.js';
 
 const router = Router();
 
@@ -11,5 +11,8 @@ router.get('/Empleados/:Id_Empleado', obtenerEmpleado);
 
 // Ruta para registrar una nueva Categoría
 router.post('/registrarEmpleado', registrarEmpleado);
+
+// Ruta para eliminar un empleado por su ID
+router.delete('/eliminarEmpleado/:Id_Empleado', eliminarEmpleado);
 
 export default router;

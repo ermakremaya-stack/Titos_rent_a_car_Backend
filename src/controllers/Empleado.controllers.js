@@ -62,3 +62,22 @@ export const registrarEmpleado = async (req, res) => {
         });
     }
 };
+
+// Eliminar un Empleado por su ID
+export const eliminarEmpleado = async (req, res) => {
+    try {
+        const [result] = await pool.query('DELETE FROM Empleado WHERE Id_Empleado = ?', [req.params.Id_Empleado]);
+        if (result.affectedRows <= 0) {
+            return res.status(404).json({
+                mensaje: `Error al eliminar. ID ${req.params.Id_Empleado} no encontrado.`
+            });
+        }
+        //Respueesta exitosa
+        res.sendStatus(204).send();
+    } catch (error) {
+        return res.status(500).json({
+            mensaje: 'Ha ocurrido un error al eliminar el Empleado.',
+            error: error
+        });
+    }
+};

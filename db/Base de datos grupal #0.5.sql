@@ -2,8 +2,8 @@ CREATE DATABASE BD_rentacar_G3;
 USE BD_rentacar_G3;
 
 -- Tabla Cliente
-CREATE TABLE Cliente (
-    Id_Cliente INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Usuario (
+    Id_Usuario INT PRIMARY KEY AUTO_INCREMENT,
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
     Nombre2 varchar(50) not null,
@@ -17,6 +17,7 @@ CREATE TABLE Cliente (
 
 CREATE TABLE Empleado (
     Id_Empleado INT PRIMARY KEY AUTO_INCREMENT,
+    Rol varchar (50),
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
     Nombre2 varchar(50) not null,
@@ -50,11 +51,11 @@ CREATE TABLE Detalle_Alquiler (
     Id_Detalle_Alquiler INT PRIMARY KEY AUTO_INCREMENT,
     Id_Alquiler INT,
     Id_Coche INT,
-    Id_Cliente INT,
+    Id_Usuario INT,
     Precio_Total DECIMAL(10,2) NOT NULL,
     FOREIGN KEY (Id_Alquiler) REFERENCES Alquiler(Id_Alquiler) ON DELETE CASCADE,
     FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche) ON DELETE CASCADE,
-    FOREIGN KEY (Id_Cliente) REFERENCES Cliente(Id_Cliente) ON DELETE CASCADE
+    FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id_Usuario) ON DELETE CASCADE
 );
 
 -- Tabla Mantenimiento de Coche
@@ -80,61 +81,97 @@ CREATE TABLE Detalle_Mantenimiento (
     FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche)
 );
 
--- CREAR USUARIOS DE PRUEBA EN EL SERVIDOR
+CREATE TABLE IF NOT EXISTS bitacora_general (
+    id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
+    tabla_afectada VARCHAR(50) NOT NULL,
+    tipo_cambio VARCHAR(20) NOT NULL,
+    usuario VARCHAR(100) NOT NULL,
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
-CREATE USER IF NOT EXISTS 'Yaleska'@'localhost' IDENTIFIED BY 'admin5678';
-CREATE USER IF NOT EXISTS 'Cristal'@'localhost' IDENTIFIED BY 'editor3478';
-CREATE USER IF NOT EXISTS 'Roberto'@'localhost' IDENTIFIED BY 'lector8878';
+DELIMITER $$
 
--- Eliminar usuario
-DROP USER 'Yaleska'@'localhost';
-DROP USER 'Cristal'@'localhost';
-DROP USER 'Roberto'@'localhost';
+-- Trigger para INSERT en Alquiler
+CREATE TRIGGER trg_alquiler_insert
+AFTER INSERT ON Alquiler
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Alquiler', 'INSERT', USER());
+END$$
 
--- ADMINISTRADOR 
--- Para agregar permisos
-GRANT INSERT ON BD_rentacar_G3.Cliente TO 'Yaleska'@'localhost';
+DELIMITER $$
 
--- EDITOR
-GRANT UPDATE, SELECT ON BD_rentacar_G3.Cliente TO 'Cristal'@'localhost';
+-- Trigger para UPDATE en Alquiler
+CREATE TRIGGER trg_alquiler_update
+AFTER UPDATE ON Alquiler
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Alquiler', 'UPDATE', USER());
+END$$
 
--- Lector
-GRANT SELECT ON BD_rentacar_G3.Cliente TO 'Roberto'@'localhost';
+DELIMITER $$ 
+-- Trigger para DELETE en Alquiler
+CREATE TRIGGER trg_alquiler_delete
+AFTER DELETE ON Alquiler
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Alquiler', 'DELETE', USER());
+END$$
 
+DELIMITER ;
 
+-- INSERTAR ALQUILER
+INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin)
+VALUES ('2025-09-23 10:00:00', '2025-09-25 10:00:00');
 
+-- ACTUALIZAR ALQUILER
+UPDATE Alquiler SET Fecha_Fin = '2025-09-26 18:00:00' WHERE Id_Alquiler = 1;
+
+-- ELIMINAR ALQUILER
+DELETE FROM Alquiler WHERE Id_Alquiler = 1;
+
+-- Visualizar
+SELECT * FROM bitacora_general;
 
 -- -----------------------------------------------------------------------------------
 
--- Insertar datos en la tabla Cliente
-INSERT INTO Cliente (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia) VALUES
-('001-010101-0000A', 'Juan', 'Miguel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'juan.perez@email.com', 'LIC-001'),
-('002-020202-0000B', 'Maria', 'Lopez', 'Lopez', 'Garcia', '87654321', 'Avenida Central 456', 'maria.lopez@email.com', 'LIC-B2'),
-('003-030303-0000C', 'Carlos', 'Antonio', 'Gomez', 'Rodriguez', '11223344', 'Calle Luna 789', 'carlos.gomez@email.com', 'LIC-003'),
-('004-040404-0000D', 'Ana', 'Maria', 'Martinez', 'Pereira', '55667788', 'Calle Sol 101', 'ana.martinez@email.com', 'LIC-A1'),
-('005-050505-0000E', 'Luis', 'Fernando', 'Diaz', 'Gonzalez', '22334455', 'Avenida Libertad 234', 'luis.diaz@email.com', 'LIC-B2'),
-('006-060606-0000F', 'Patricia', 'Luisa', 'Fernandez', 'Castillo', '33445566', 'Calle 9 de Julio 567', 'patricia.fernandez@email.com', 'LIC-001'),
-('007-070707-0000G', 'Miguel', 'Angel', 'Hernandez', 'Moreno', '44556677', 'Calle de la Paz 890', 'miguel.hernandez@email.com', 'LIC-C3'),
-('008-080808-0000H', 'Elena', 'Maria', 'Garcia', 'Ruiz', '55667788', 'Avenida de Mayo 321', 'elena.garcia@email.com', 'LIC-A1'),
-('009-090909-0000I', 'Juan', 'Carlos', 'Sanchez', 'Perez', '66778899', 'Calle 12 de Octubre 654', 'juan.sanchez@email.com', 'LIC-B2'),
-('010-101010-0000J', 'Ricardo', 'David', 'Ruiz', 'Lopez', '77889900', 'Avenida Argentina 432', 'ricardo.ruiz@email.com', 'LIC-B1'),
-('011-111111-0000K', 'Carmen', 'Elena', 'Morales', 'Hernandez', '88990011', 'Calle Independencia 765', 'carmen.morales@email.com', 'LIC-C3'),
-('012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', '99001122', 'Avenida del Sol 876', 'sergio.torres@email.com', 'LIC-001'),
-('013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', '10111213', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'LIC-A2'),
-('014-141414-0000N', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', '21222324', 'Calle Mistral 100', 'eduardo.vazquez@email.com', 'LIC-B1'),
-('015-151515-0000O', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', '32333435', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com', 'LIC-C2'),
-('016-161616-0000P', 'Felipe', 'Antonio', 'Serrano', 'Jimenez', '43444546', 'Calle Mirador 432', 'felipe.serrano@email.com', 'LIC-B2'),
-('017-171717-0000Q', 'Carla', 'Lucia', 'Castro', 'Fernandez', '54565768', 'Avenida Universitaria 123', 'carla.castro@email.com', 'LIC-A1'),
-('018-181818-0000R', 'David', 'Manuel', 'Mendez', 'Morales', '65676879', 'Calle Las Palmas 876', 'david.mendez@email.com', 'LIC-B1'),
-('019-191919-0000S', 'Laura', 'Patricia', 'Salazar', 'Lopez', '76787980', 'Avenida San Martin 345', 'laura.salazar@email.com', 'LIC-C3'),
-('020-202020-0000T', 'Antonio', 'Carlos', 'Gonzalez', 'Vazquez', '87898091', 'Calle del Bosque 654', 'antonio.gonzalez@email.com', 'LIC-003');
+-- Insertar datos en la tabla Usuario
+INSERT INTO Usuario (Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia) VALUES
+('001-010101-0000A', 'Cliente', 'Juan', 'Miguel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'juan.perez@email.com', 'LIC-001'),
+('002-020202-0000B', 'Cliente', 'Maria', 'Lopez', 'Lopez', 'Garcia', '87654321', 'Avenida Central 456', 'maria.lopez@email.com', 'LIC-B2'),
+('003-030303-0000C', 'Cliente', 'Carlos', 'Antonio', 'Gomez', 'Rodriguez', '11223344', 'Calle Luna 789', 'carlos.gomez@email.com', 'LIC-003'),
+('004-040404-0000D', 'Cliente', 'Ana', 'Maria', 'Martinez', 'Pereira', '55667788', 'Calle Sol 101', 'ana.martinez@email.com', 'LIC-A1'),
+('005-050505-0000E', 'Cliente', 'Luis', 'Fernando', 'Diaz', 'Gonzalez', '22334455', 'Avenida Libertad 234', 'luis.diaz@email.com', 'LIC-B2'),
+('006-060606-0000F', 'Cliente', 'Patricia', 'Luisa', 'Fernandez', 'Castillo', '33445566', 'Calle 9 de Julio 567', 'patricia.fernandez@email.com', 'LIC-001'),
+('007-070707-0000G', 'Cliente', 'Miguel', 'Angel', 'Hernandez', 'Moreno', '44556677', 'Calle de la Paz 890', 'miguel.hernandez@email.com', 'LIC-C3'),
+('008-080808-0000H', 'Cliente', 'Elena', 'Maria', 'Garcia', 'Ruiz', '55667788', 'Avenida de Mayo 321', 'elena.garcia@email.com', 'LIC-A1'),
+('009-090909-0000I', 'Cliente', 'Juan', 'Carlos', 'Sanchez', 'Perez', '66778899', 'Calle 12 de Octubre 654', 'juan.sanchez@email.com', 'LIC-B2'),
+('010-101010-0000J', 'Cliente', 'Ricardo', 'David', 'Ruiz', 'Lopez', '77889900', 'Avenida Argentina 432', 'ricardo.ruiz@email.com', 'LIC-B1'),
+('011-111111-0000K', 'Empleado', 'Carmen', 'Elena', 'Morales', 'Hernandez', '88990011', 'Calle Independencia 765', 'carmen.morales@email.com', 'LIC-C3'),
+('012-121212-0000L', 'Empleado', 'Sergio', 'Alejandro', 'Torres', 'Santos', '99001122', 'Avenida del Sol 876', 'sergio.torres@email.com', 'LIC-001'),
+('013-131313-0000M', 'Empleado', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', '10111213', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'LIC-A2'),
+('014-141414-0000N', 'Empleado', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', '21222324', 'Calle Mistral 100', 'eduardo.vazquez@email.com', 'LIC-B1'),
+('015-151515-0000O', 'Empleado', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', '32333435', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com', 'LIC-C2'),
+('016-161616-0000P', 'Administrador', 'Felipe', 'Antonio', 'Serrano', 'Jimenez', '43444546', 'Calle Mirador 432', 'felipe.serrano@email.com', 'LIC-B2'),
+('017-171717-0000Q', 'Administrador', 'Carla', 'Lucia', 'Castro', 'Fernandez', '54565768', 'Avenida Universitaria 123', 'carla.castro@email.com', 'LIC-A1'),
+('018-181818-0000R', 'Administrador', 'David', 'Manuel', 'Mendez', 'Morales', '65676879', 'Calle Las Palmas 876', 'david.mendez@email.com', 'LIC-B1'),
+('019-191919-0000S', 'Administrador', 'Laura', 'Patricia', 'Salazar', 'Lopez', '76787980', 'Avenida San Martin 345', 'laura.salazar@email.com', 'LIC-C3'),
+('020-202020-0000T', 'Administrador', 'Antonio', 'Carlos', 'Gonzalez', 'Vazquez', '87898091', 'Calle del Bosque 654', 'antonio.gonzalez@email.com', 'LIC-003');
+
 
 
 
 -- Insertar datos en la tabla Empleados
-INSERT INTO Empleado (Cedula, Nombre1,Nombre2, Apellido1,Apellido2, Direccion, Email) VALUES
-('003-030303-0000C', 'Marcelo','Jose', 'Martines','Gonzalez', 'De la carretera la manzana 1c sur llegando a chernovil', 'Covid19MalumaYoPerreoSola@gmail.com'),
-('007-070707-0000G', 'Luis','Mario', 'Rodriguez','Medina', 'Avenida Las Américas 123', 'RobaCarros@gmail.com');
+INSERT INTO Empleado (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email) VALUES
+('011-111111-0000K', 'Carmen', 'Elena', 'Morales', 'Hernandez', 'Calle Independencia 765', 'carmen.morales@email.com'),
+('012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com'),
+('013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com'),
+('014-141414-0000N', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', 'Calle Mistral 100', 'eduardo.vazquez@email.com'),
+('015-151515-0000O', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com');
+
 
 
 
@@ -187,7 +224,7 @@ INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES
 
 
 -- Insertar datos en la tabla Detalle_Alquiler
-INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Cliente, Id_Coche, Precio_Total) VALUES
+INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Usuario, Id_Coche, Precio_Total) VALUES
 (1, 1, 1, 500.00),
 (2, 2, 2, 600.00),
 (3, 3, 3, 450.00),
@@ -907,4 +944,70 @@ DELIMITER ;
 
 SELECT TotalMantenimientosPorCoche(3);
 
+CREATE USER IF NOT EXISTS "ernesto"@"localhost" IDENTIFIED BY "123456";
+CREATE USER IF NOT EXISTS "kreivin"@"localhost" IDENTIFIED BY "242526";
+CREATE USER IF NOT EXISTS "maestrogarcia"@"localhost" IDENTIFIED BY "master15";
 
+-- Administrador
+GRANT ALL PRIVILEGES ON BD_rentacar_G3.Cliente TO "ernesto"@"localhost";
+-- Editor
+GRANT INSERT, UPDATE ON BD_rentacar_G3. Empleado TO "kreivin"@"localhost";
+-- lector
+GRANT SELECT ON BD_rentacar_G3. Alquiler TO "maestrogarcia"@"localhost";
+
+SHOW GRANTS FOR "ernesto"@"localhost";
+SHOW GRANTS FOR "kreivin"@"localhost";
+SHOW GRANTS FOR "maestrogarcia"@"localhost";
+
+
+
+-- Evento para actualizar coches que ya terminaron su alquiler
+
+DELIMITER $$
+CREATE EVENT actualizar_coches_terminados
+ON SCHEDULE EVERY 1 HOUR
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+    UPDATE Coche c
+    JOIN Detalle_Alquiler da ON c.Id_Coche = da.Id_Coche
+    JOIN Alquiler a ON da.Id_Alquiler = a.Id_Alquiler
+    SET c.Estado = 'Disponible'
+    WHERE a.Fecha_Fin < NOW()
+      AND c.Estado = 'En Alquiler';
+END$$
+DELIMITER ;
+
+-- Evento para marcar mantenimientos vencidos
+
+DELIMITER $$
+CREATE EVENT marcar_mantenimientos_vencidos
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+BEGIN
+    UPDATE Mantenimiento m
+    SET m.Estado = 'Vencido'
+    WHERE m.Fecha_Fin < NOW()
+      AND m.Estado != 'Vencido';
+END$$
+DELIMITER ;
+
+SET GLOBAL event_scheduler = ON; #para activar los eventos en MySQL
+SHOW EVENTS; #mostrar todos los eventos creados en MySQL
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_coche_en_mantenimiento
+AFTER INSERT ON Detalle_Mantenimiento
+FOR EACH ROW
+BEGIN
+    UPDATE Coche
+    SET Estado = 'En Mantenimiento'
+    WHERE Id_Coche = NEW.Id_Coche;
+END$$
+
+DELIMITER ;
+
+SHOW TRIGGERS;

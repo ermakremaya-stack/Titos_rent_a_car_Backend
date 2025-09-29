@@ -12,9 +12,11 @@ CREATE TABLE Usuario (
     Telefono VARCHAR(8) NOT NULL,
     Direccion TEXT NOT NULL,
     Email VARCHAR(100) UNIQUE,
-    Licencia VARCHAR (8)
+    Licencia VARCHAR (8) NOT NULL,
+    Contrasena varchar (20) NOT NULL
 );
 
+-- Tabla Empleado
 CREATE TABLE Empleado (
     Id_Empleado INT PRIMARY KEY AUTO_INCREMENT,
     Rol varchar (50),
@@ -24,7 +26,8 @@ CREATE TABLE Empleado (
     Apellido1 VARCHAR(50) NOT NULL,
     Apellido2 varchar(50),
     Direccion VARCHAR(150) NOT NULL,
-    Email VARCHAR(150) UNIQUE
+    Email VARCHAR(150) UNIQUE,
+    Contrasena varchar (20) NOT NULL
 );
 
 -- Tabla Coche
@@ -89,6 +92,7 @@ CREATE TABLE IF NOT EXISTS bitacora_general (
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 
 DELIMITER $$
 
 -- Trigger para INSERT en Alquiler

@@ -81,3 +81,29 @@ export const eliminarEmpleado = async (req, res) => {
         });
     }
 };
+
+// Actualizar una Empleado por su ID
+export const actualizarEmpleado = async (req, res) => {
+    try {
+        const Id_Empleado = req.params.Id_Empleado;
+        const { Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email } = req.body;
+
+        const [result] = await pool.query(
+            'UPDATE Empleado SET Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ? WHERE Id_Empleado = ?',
+            [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Id_Empleado]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                mensaje: `Error al actualizar el empleado. El ID ${Id_Empleado} no fue encontrado.`
+            });
+        }
+        res.status(200).json({
+            mensaje: `Empleado con ID ${Id_Empleado} actualizado exitosamente.`
+        });
+    } catch (error) {
+        return res.status(500).json({
+            mensaje: "Ha ocurrido un error al actualizar el empleado.",
+            error: error
+        });
+    }
+};

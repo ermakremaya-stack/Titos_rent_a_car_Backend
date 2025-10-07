@@ -84,6 +84,7 @@ CREATE TABLE Detalle_Mantenimiento (
     FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche)
 );
 
+-- ====================BITACORA================
 CREATE TABLE IF NOT EXISTS bitacora_general (
     id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
     tabla_afectada VARCHAR(50) NOT NULL,
@@ -91,10 +92,11 @@ CREATE TABLE IF NOT EXISTS bitacora_general (
     usuario VARCHAR(100) NOT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+-- =============================================
 
--- 
+
+-- ==================TRIGGERS ALQUILER EN TABLA BITACORA===================
 DELIMITER $$
-
 -- Trigger para INSERT en Alquiler
 CREATE TRIGGER trg_alquiler_insert
 AFTER INSERT ON Alquiler
@@ -105,6 +107,7 @@ BEGIN
 END$$
 
 DELIMITER $$
+
 
 -- Trigger para UPDATE en Alquiler
 CREATE TRIGGER trg_alquiler_update
@@ -127,55 +130,150 @@ END$$
 
 DELIMITER ;
 
--- INSERTAR ALQUILER
-INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin)
-VALUES ('2025-09-23 10:00:00', '2025-09-25 10:00:00');
+-- ==================TRIGGERS COCHE EN TABLA BITACORA===================
+-- Triggers de coche
+DELIMITER $$
 
--- ACTUALIZAR ALQUILER
-UPDATE Alquiler SET Fecha_Fin = '2025-09-26 18:00:00' WHERE Id_Alquiler = 1;
+CREATE TRIGGER trg_coche_insert
+AFTER INSERT ON Coche
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Coche', 'INSERT', USER());
+END$$
 
--- ELIMINAR ALQUILER
-DELETE FROM Alquiler WHERE Id_Alquiler = 1;
+CREATE TRIGGER trg_coche_update
+AFTER UPDATE ON Coche
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Coche', 'UPDATE', USER());
+END$$
 
--- Visualizar
-SELECT * FROM bitacora_general;
+CREATE TRIGGER trg_coche_delete
+AFTER DELETE ON Coche
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Coche', 'DELETE', USER());
+END$$
 
--- -----------------------------------------------------------------------------------
+-- ==================TRIGGERS USUARIO EN TABLA BITACORA===================
+DELIMITER $$
+CREATE TRIGGER trg_usuario_insert
+AFTER INSERT ON Usuario
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Usuario', 'INSERT', USER());
+END$$
 
--- Insertar datos en la tabla Usuario
-INSERT INTO Usuario (Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia) VALUES
-('001-010101-0000A', 'Cliente', 'Juan', 'Miguel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'juan.perez@email.com', 'LIC-001'),
-('002-020202-0000B', 'Cliente', 'Maria', 'Lopez', 'Lopez', 'Garcia', '87654321', 'Avenida Central 456', 'maria.lopez@email.com', 'LIC-B2'),
-('003-030303-0000C', 'Cliente', 'Carlos', 'Antonio', 'Gomez', 'Rodriguez', '11223344', 'Calle Luna 789', 'carlos.gomez@email.com', 'LIC-003'),
-('004-040404-0000D', 'Cliente', 'Ana', 'Maria', 'Martinez', 'Pereira', '55667788', 'Calle Sol 101', 'ana.martinez@email.com', 'LIC-A1'),
-('005-050505-0000E', 'Cliente', 'Luis', 'Fernando', 'Diaz', 'Gonzalez', '22334455', 'Avenida Libertad 234', 'luis.diaz@email.com', 'LIC-B2'),
-('006-060606-0000F', 'Cliente', 'Patricia', 'Luisa', 'Fernandez', 'Castillo', '33445566', 'Calle 9 de Julio 567', 'patricia.fernandez@email.com', 'LIC-001'),
-('007-070707-0000G', 'Cliente', 'Miguel', 'Angel', 'Hernandez', 'Moreno', '44556677', 'Calle de la Paz 890', 'miguel.hernandez@email.com', 'LIC-C3'),
-('008-080808-0000H', 'Cliente', 'Elena', 'Maria', 'Garcia', 'Ruiz', '55667788', 'Avenida de Mayo 321', 'elena.garcia@email.com', 'LIC-A1'),
-('009-090909-0000I', 'Cliente', 'Juan', 'Carlos', 'Sanchez', 'Perez', '66778899', 'Calle 12 de Octubre 654', 'juan.sanchez@email.com', 'LIC-B2'),
-('010-101010-0000J', 'Cliente', 'Ricardo', 'David', 'Ruiz', 'Lopez', '77889900', 'Avenida Argentina 432', 'ricardo.ruiz@email.com', 'LIC-B1'),
-('011-111111-0000K', 'Empleado', 'Carmen', 'Elena', 'Morales', 'Hernandez', '88990011', 'Calle Independencia 765', 'carmen.morales@email.com', 'LIC-C3'),
-('012-121212-0000L', 'Empleado', 'Sergio', 'Alejandro', 'Torres', 'Santos', '99001122', 'Avenida del Sol 876', 'sergio.torres@email.com', 'LIC-001'),
-('013-131313-0000M', 'Empleado', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', '10111213', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'LIC-A2'),
-('014-141414-0000N', 'Empleado', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', '21222324', 'Calle Mistral 100', 'eduardo.vazquez@email.com', 'LIC-B1'),
-('015-151515-0000O', 'Empleado', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', '32333435', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com', 'LIC-C2'),
-('016-161616-0000P', 'Administrador', 'Felipe', 'Antonio', 'Serrano', 'Jimenez', '43444546', 'Calle Mirador 432', 'felipe.serrano@email.com', 'LIC-B2'),
-('017-171717-0000Q', 'Administrador', 'Carla', 'Lucia', 'Castro', 'Fernandez', '54565768', 'Avenida Universitaria 123', 'carla.castro@email.com', 'LIC-A1'),
-('018-181818-0000R', 'Administrador', 'David', 'Manuel', 'Mendez', 'Morales', '65676879', 'Calle Las Palmas 876', 'david.mendez@email.com', 'LIC-B1'),
-('019-191919-0000S', 'Administrador', 'Laura', 'Patricia', 'Salazar', 'Lopez', '76787980', 'Avenida San Martin 345', 'laura.salazar@email.com', 'LIC-C3'),
-('020-202020-0000T', 'Administrador', 'Antonio', 'Carlos', 'Gonzalez', 'Vazquez', '87898091', 'Calle del Bosque 654', 'antonio.gonzalez@email.com', 'LIC-003');
+CREATE TRIGGER trg_usuario_update
+AFTER UPDATE ON Usuario
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Usuario', 'UPDATE', USER());
+END$$
+
+CREATE TRIGGER trg_usuario_delete
+AFTER DELETE ON Usuario
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Usuario', 'DELETE', USER());
+END$$
+DELIMITER ;
+
+
+
+-- ==================TRIGGERS MANTENIMIENTO EN TABLA BITACORA=================== 
+DELIMITER $$
+CREATE TRIGGER trg_Mantenimiento_insert
+AFTER INSERT ON Mantenimiento
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Mantenimiento', 'INSERT', USER());
+END$$
+
+CREATE TRIGGER trg_Mantenimiento_update
+AFTER UPDATE ON Mantenimiento
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Mantenimiento', 'UPDATE', USER());
+END$$
+
+CREATE TRIGGER trg_Mantenimiento_delete
+AFTER DELETE ON Mantenimiento
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Mantenimiento', 'DELETE', USER());
+END$$
+
+DELIMITER ;
 
 
 
 
--- Insertar datos en la tabla Empleados
-INSERT INTO Empleado (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email) VALUES
-('011-111111-0000K', 'Carmen', 'Elena', 'Morales', 'Hernandez', 'Calle Independencia 765', 'carmen.morales@email.com'),
-('012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com'),
-('013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com'),
-('014-141414-0000N', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', 'Calle Mistral 100', 'eduardo.vazquez@email.com'),
-('015-151515-0000O', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com');
+-- ==================TRIGGERS EMPLEADO EN TABLA BITACORA=================== 
+DELIMITER $$
 
+CREATE TRIGGER trg_empleado_insert
+AFTER INSERT ON empleado
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('empleado', 'INSERT', USER());
+END$$
+
+CREATE TRIGGER trg_empleado_update
+AFTER UPDATE ON empleado
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('empleado', 'UPDATE', USER());
+END$$
+
+CREATE TRIGGER trg_empleado_delete
+AFTER DELETE ON empleado
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('empleado', 'DELETE', USER());
+END$$
+
+DELIMITER ;
+-- ============================================================================
+
+-- =================================INSERTS===========================================
+INSERT INTO Usuario (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena) VALUES
+('001-010101-0000A', 'Juan', 'Miguel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'juan.perez@email.com', 'LIC-001', 'juan123'),
+('002-020202-0000B', 'Maria', 'Lopez', 'Lopez', 'Garcia', '87654321', 'Avenida Central 456', 'maria.lopez@email.com', 'LIC-B2', 'maria123'),
+('003-030303-0000C', 'Carlos', 'Antonio', 'Gomez', 'Rodriguez', '11223344', 'Calle Luna 789', 'carlos.gomez@email.com', 'LIC-003', 'carlos123'),
+('004-040404-0000D', 'Ana', 'Maria', 'Martinez', 'Pereira', '55667788', 'Calle Sol 101', 'ana.martinez@email.com', 'LIC-A1', 'ana123'),
+('005-050505-0000E', 'Luis', 'Fernando', 'Diaz', 'Gonzalez', '22334455', 'Avenida Libertad 234', 'luis.diaz@email.com', 'LIC-B2', 'luis123'),
+('006-060606-0000F', 'Patricia', 'Luisa', 'Fernandez', 'Castillo', '33445566', 'Calle 9 de Julio 567', 'patricia.fernandez@email.com', 'LIC-001', 'patricia123'),
+('007-070707-0000G', 'Miguel', 'Angel', 'Hernandez', 'Moreno', '44556677', 'Calle de la Paz 890', 'miguel.hernandez@email.com', 'LIC-C3', 'miguel123'),
+('008-080808-0000H', 'Elena', 'Maria', 'Garcia', 'Ruiz', '55667788', 'Avenida de Mayo 321', 'elena.garcia@email.com', 'LIC-A1', 'elena123'),
+('009-090909-0000I', 'Juan', 'Carlos', 'Sanchez', 'Perez', '66778899', 'Calle 12 de Octubre 654', 'juan.sanchez@email.com', 'LIC-B2', 'juanC123'),
+('010-101010-0000J', 'Ricardo', 'David', 'Ruiz', 'Lopez', '77889900', 'Avenida Argentina 432', 'ricardo.ruiz@email.com', 'LIC-B1', 'ricardo123');
+
+
+
+INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES
+('Empleado', '011-111111-0000K', 'Carmen', 'Elena', 'Morales', 'Hernandez', 'Calle Independencia 765', 'carmen.morales@email.com', 'carmen123'),
+('Empleado', '012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com', 'sergio123'),
+('Empleado', '013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'rosa123'),
+('Empleado', '014-141414-0000N', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', 'Calle Mistral 100', 'eduardo.vazquez@email.com', 'eduardo123'),
+('Empleado', '015-151515-0000O', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com', 'gabriela123'),
+('Administrador', '016-161616-0000P', 'Felipe', 'Antonio', 'Serrano', 'Jimenez', 'Calle Mirador 432', 'felipe.serrano@email.com', 'felipe123'),
+('Administrador', '017-171717-0000Q', 'Carla', 'Lucia', 'Castro', 'Fernandez', 'Avenida Universitaria 123', 'carla.castro@email.com', 'carla123'),
+('Administrador', '018-181818-0000R', 'David', 'Manuel', 'Mendez', 'Morales', 'Calle Las Palmas 876', 'david.mendez@email.com', 'david123'),
+('Administrador', '019-191919-0000S', 'Laura', 'Patricia', 'Salazar', 'Lopez', 'Avenida San Martin 345', 'laura.salazar@email.com', 'laura123'),
+('Administrador', '020-202020-0000T', 'Antonio', 'Carlos', 'Gonzalez', 'Vazquez', 'Calle del Bosque 654', 'antonio.gonzalez@email.com', 'antonio123');
 
 
 
@@ -226,9 +324,7 @@ INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES
 ('2024-04-18 12:30:00', '2024-04-28 19:30:00'),
 ('2024-04-20 10:00:00', '2024-04-30 16:00:00');
 
-
--- Insertar datos en la tabla Detalle_Alquiler
-INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Usuario, Id_Coche, Precio_Total) VALUES
+INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Coche, Id_Usuario, Precio_Total) VALUES
 (1, 1, 1, 500.00),
 (2, 2, 2, 600.00),
 (3, 3, 3, 450.00),
@@ -239,15 +335,15 @@ INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Usuario, Id_Coche, Precio_Total) V
 (8, 8, 8, 530.00),
 (9, 9, 9, 490.00),
 (10, 10, 10, 720.00),
-(11, 11, 11, 570.00),
-(12, 12, 12, 510.00),
-(13, 13, 13, 690.00),
-(14, 14, 14, 500.00),
-(15, 15, 15, 560.00),
-(16, 16,16, 730.00),
-(17, 17, 17, 520.00),
-(18, 18, 18, 540.00),
-(19, 19, 19, 710.00);
+(11, 11, 1, 570.00),
+(12, 12, 2, 510.00),
+(13, 13, 3, 690.00),
+(14, 14, 4, 500.00),
+(15, 15, 5, 560.00),
+(16, 16, 6, 730.00),
+(17, 17, 7, 520.00),
+(18, 18, 8, 540.00),
+(19, 19, 9, 710.00);
 
 -- Insertar datos en la tabla Mantenimiento
 INSERT INTO Mantenimiento (Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, Costo) VALUES
@@ -272,55 +368,12 @@ INSERT INTO Mantenimiento (Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, 
 ('Revisión de sistema de dirección', 'Inspección general', '2024-06-20 10:00:00', '2024-06-20 13:00:00', 75.00),
 ('Reemplazo de faros', 'Mantenimiento correctivo', '2025-02-25 14:00:00', '2025-03-25 16:00:00', 40.00);
 
-    
--- Insertar datos en la tabla Detalle_Mantenimiento
 INSERT INTO Detalle_Mantenimiento (Id_Mantenimiento, Id_Empleado, Id_Coche, Observaciones, Recomendaciones, Partes_Cambiadas) VALUES
-(1, 1, 1, 'El aceite estaba muy sucio', 'Realizar mantenimiento cada 3 meses', 'Aceite, Filtro de aceite'),
-(2, 1, 2, 'Pastillas de freno desgastadas', 'Revisar frenos cada 6 meses', 'Pastillas de freno, Líquido de frenos'),
-(3, 2, 3, 'Neumáticos con desgaste irregular', 'Balancear ruedas cada 6 meses', 'Neumáticos, Alineación de ruedas'),
-(4, 2, 4, 'Frenos con ruido', 'Verificar frenos cada 4 meses', 'Pastillas de freno, Discos de freno'),
-(5, 2, 5, 'Filtro de aire obstruido', 'Cambiar filtro de aire cada 12 meses', 'Filtro de aire'),
-(6, 1, 6, 'Batería débil', 'Revisar batería cada 8 meses', 'Batería'),
-(7, 2, 7, 'Fugas de aceite en el motor', 'Revisar sistema de sellos cada 6 meses', 'Juntas, Aceite del motor'),
-(8, 1, 8, 'Luces traseras fundidas', 'Reemplazar luces cada 6 meses', 'Luces traseras'),
-(9, 2, 9, 'Suspensión ruidosa', 'Revisar suspensión cada 6 meses', 'Amortiguadores, Muelles'),
-(10, 2, 10, 'Aire acondicionado no enfría', 'Revisar sistema de refrigeración cada año', 'Filtro de aire acondicionado, Gas refrigerante'),
-(11, 1, 11, 'Ruidos al frenar', 'Revisar frenos cada 3 meses', 'Pastillas de freno, Líquido de frenos'),
-(12, 2, 12, 'Fugas de refrigerante', 'Revisar sistema de refrigeración cada 6 meses', 'Mangueras, Radiador'),
-(13, 1, 13, 'Bujías sucias', 'Reemplazar bujías cada 12 meses', 'Bujías'),
-(14, 2, 14, 'Aceite de motor sucio', 'Realizar cambio de aceite cada 5,000 km', 'Aceite, Filtro de aceite'),
-(15, 1, 15, 'Sistema de dirección flojo', 'Revisar sistema de dirección cada 6 meses', 'Líquido de dirección, Bujes'),
-(16, 2, 16, 'Frenos desajustados', 'Ajustar frenos cada 6 meses', 'Pastillas de freno, Discos de freno'),
-(17, 1, 17, 'Neumáticos con baja presión', 'Revisar presión de neumáticos cada mes', 'Neumáticos'),
-(18, 1, 18, 'Frenos chillando', 'Reemplazar pastillas de freno cada 6 meses', 'Pastillas de freno'),
-(19, 2, 19, 'Motor con vibraciones', 'Revisar motor cada 12 meses', 'Motor, Suspensión'),
-(10, 2, 15, 'Excesivo consumo de combustible', 'Revisar sistema de inyección cada 6 meses', 'Inyectores, Filtro de combustible');
-
--- ----------------------------------------------------------------------------------
-
--- Visualizar
-
--- Cliente
-SELECT * FROM Cliente;
-
--- Empleado
-SELECT * FROM Empleado;
-
--- Coche
-SELECT * FROM Coche;
-
--- Alquiler
-SELECT * FROM Alquiler;
-
--- Detalle_Alquiler
-SELECT * FROM Detalle_Alquiler;
-
--- Mantenimiento
-SELECT * FROM Mantenimiento;
-
--- Detalle_Mantenimiento
-SELECT * FROM Detalle_Mantenimiento;
-
+(1, 1, 4, 'Cambio exitoso de aceite y filtro', 'Revisar cada 5,000 km', 'Aceite, Filtro de aceite'),
+(2, 2, 7, 'Sistema de frenos reemplazado', 'Verificar cada 3 meses', 'Pastillas de freno, Discos'),
+(3, 3, 9, 'Batería vieja reemplazada', 'Mantener bornes limpios', 'Batería'),
+(4, 4, 13, 'Sistema eléctrico inspeccionado', 'Revisar cada 6 meses', 'Cableado'),
+(5, 5, 19, 'Llantas nuevas instaladas', 'Rotar cada 10,000 km', '4 Llantas');
 -- -------------------------------------------------------------------------------------
 
 -- Editar
@@ -361,7 +414,6 @@ SET Observaciones = 'Revisado sin novedades'
 WHERE Id_Detalle_Mantenimiento = 1;
 
 -- --------------------------------------------------------------------------------
-
 -- Eliminar
 
 -- Cliente
@@ -394,6 +446,12 @@ WHERE Id_Detalle_Mantenimiento = 1;
 
 -- ----------------------------------------------------------------------------------
 
+
+
+
+
+
+-- =====================================================================================================
 -- Reporte de alquileres 
 SELECT 
     a.Id_Alquiler, 
@@ -442,7 +500,8 @@ GROUP BY E.Id_Empleado
 ORDER BY Total_Coches_Reparados DESC
 LIMIT 1;
 
--- ----------------------------------------------------------------------------------
+
+-- ================================VISTAS===========================
 
 -- vistas de Empleados
 CREATE VIEW Vista_Empleado_Mayor_Reparador AS
@@ -549,7 +608,7 @@ JOIN Coche C ON DM.Id_Coche = C.Id_Coche;
 
 SELECT * FROM Vista_Detalle_Mantenimiento;
 
- -- Vista de todos los coches
+-- Vista de todos los coches
 CREATE VIEW Coches_vista AS
 SELECT Modelo, Marca, Estado
 FROM Coche
@@ -647,11 +706,42 @@ JOIN
 JOIN 
     Mantenimiento m ON dm.Id_Mantenimiento = m.Id_Mantenimiento
 WHERE 
-    c.Estado = "En Mantenimiento"
+    c.Estado = "En Mantenimiento";
+    
+    
+    -- Alquileres activos hoy
+CREATE VIEW Alquileres_Activos_Hoy AS
+SELECT 
+    a.Id_Alquiler,
+    da.Id_Cliente,
+    concat(Cl.Nombre1, " ", Cl.Nombre2, " ", Cl.Apellido1, " ", Cl.Apellido2) AS Nombre,
+    da.Id_Coche,
+    Co.Marca,
+    Co.Modelo,
+    Co.Placa,
+    a.Fecha_Inicio,
+    a.Fecha_Fin
+FROM 
+    Alquiler a
+JOIN 
+    Detalle_Alquiler da ON a.Id_Alquiler = da.Id_Alquiler
+JOIN 
+    Cliente Cl ON a.Id_Alquiler = Cl.Id_Cliente
+JOIN 
+    Coche Co ON a.Id_Alquiler = Co.Id_Coche
+WHERE 
+    CURDATE() BETWEEN DATETIME(a.Fecha_Inicio) AND DATE(a.Fecha_Fin);
+
+SELECT * FROM Alquileres_Activos_Hoy;
+-- ==================================================================================
 
 
 
--- -----------------------------------------------------------------------------------
+
+
+
+
+-- ===============================PROCEDURE=============================================
 -- procedimiento almacenado
 
 -- Insertar nuevo cliente
@@ -729,31 +819,6 @@ DELIMITER ;
 
 CALL ActualizarCocheDisponible(5);
 
--- -------------------------------------------------
--- Alquileres activos hoy
-CREATE VIEW Alquileres_Activos_Hoy AS
-SELECT 
-    a.Id_Alquiler,
-    da.Id_Cliente,
-    concat(Cl.Nombre1, " ", Cl.Nombre2, " ", Cl.Apellido1, " ", Cl.Apellido2) AS Nombre,
-    da.Id_Coche,
-    Co.Marca,
-    Co.Modelo,
-    Co.Placa,
-    a.Fecha_Inicio,
-    a.Fecha_Fin
-FROM 
-    Alquiler a
-JOIN 
-    Detalle_Alquiler da ON a.Id_Alquiler = da.Id_Alquiler
-JOIN 
-    Cliente Cl ON a.Id_Alquiler = Cl.Id_Cliente
-JOIN 
-    Coche Co ON a.Id_Alquiler = Co.Id_Coche
-WHERE 
-    CURDATE() BETWEEN DATETIME(a.Fecha_Inicio) AND DATE(a.Fecha_Fin);
-
-SELECT * FROM Alquileres_Activos_Hoy;
 
 -- -------------------------------------------------------------
 -- Actualizar estado de coche a “Alquilado”
@@ -874,8 +939,18 @@ DELIMITER ;
 
 CALL InsertarDetalleMantenimiento(1, 2, 3, 'Cambio de aceite y revisión general');
 
+-- ======================================================================================
 
--- -------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+-- ==============================FUNSIONES===============================
 -- Obtener costo total de mantenimiento por coche
 DELIMITER //
 CREATE FUNCTION CostoMantenimientoPorCoche(p_IdCoche INT)
@@ -948,6 +1023,15 @@ DELIMITER ;
 
 SELECT TotalMantenimientosPorCoche(3);
 
+-- ============================================================================================
+
+
+
+
+
+
+
+-- ===========================CREAR USUARIOS=================================================================
 CREATE USER IF NOT EXISTS "ernesto"@"localhost" IDENTIFIED BY "123456";
 CREATE USER IF NOT EXISTS "kreivin"@"localhost" IDENTIFIED BY "242526";
 CREATE USER IF NOT EXISTS "maestrogarcia"@"localhost" IDENTIFIED BY "master15";
@@ -965,8 +1049,11 @@ SHOW GRANTS FOR "maestrogarcia"@"localhost";
 
 
 
--- Evento para actualizar coches que ya terminaron su alquiler
 
+
+
+-- ==================================EVENTOS==================================
+-- Evento para actualizar coches que ya terminaron su alquiler
 DELIMITER $$
 CREATE EVENT actualizar_coches_terminados
 ON SCHEDULE EVERY 1 HOUR
@@ -978,7 +1065,7 @@ BEGIN
     JOIN Alquiler a ON da.Id_Alquiler = a.Id_Alquiler
     SET c.Estado = 'Disponible'
     WHERE a.Fecha_Fin < NOW()
-      AND c.Estado = 'En Alquiler';
+    AND c.Estado = 'En Alquiler';
 END$$
 DELIMITER ;
 
@@ -993,7 +1080,7 @@ BEGIN
     UPDATE Mantenimiento m
     SET m.Estado = 'Vencido'
     WHERE m.Fecha_Fin < NOW()
-      AND m.Estado != 'Vencido';
+    AND m.Estado != 'Vencido';
 END$$
 DELIMITER ;
 
@@ -1015,3 +1102,4 @@ END$$
 DELIMITER ;
 
 SHOW TRIGGERS;
+

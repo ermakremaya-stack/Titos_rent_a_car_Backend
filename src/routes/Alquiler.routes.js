@@ -4,10 +4,10 @@ import { actualizarAlquiler, eliminarAlquiler, obtenerAlquiler, obtenerAlquilere
 const router = Router();
 
 // Rutas
-router.get('/Alquiler', obtenerAlquileres);
+router.get('/Alquileres', obtenerAlquileres);
 
 // Ruta para obtener un alquiler por su ID
-router.get('/Alquileres/:Id_Alquiler', obtenerAlquiler);
+router.get('/Alquiler/:Id_Alquiler', obtenerAlquiler);
 
 // Ruta para registrar un nuevo alquiler
 router.post('/registrarAlquiler', registrarAlquiler);

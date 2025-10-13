@@ -7,28 +7,28 @@ CREATE TABLE Usuario (
     ROL ENUM('Usuario'),
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
-    Nombre2 varchar(50) not null,
-    Apellido1 varchar(50) not null,
+    Nombre2 VARCHAR(50) NOT NULL,
+    Apellido1 VARCHAR(50) NOT NULL,
     Apellido2 VARCHAR(50),
     Telefono VARCHAR(8) NOT NULL,
     Direccion TEXT NOT NULL,
     Email VARCHAR(100) UNIQUE,
     Licencia VARCHAR (8) NOT NULL,
-    Contrasena varchar (20) NOT NULL
+    Contrasena VARCHAR (20) NOT NULL
 );
 
 -- Tabla Empleado
 CREATE TABLE Empleado (
     Id_Empleado INT PRIMARY KEY AUTO_INCREMENT,
-    Rol varchar (50),
+    Rol VARCHAR (50),
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
-    Nombre2 varchar(50) not null,
+    Nombre2 VARCHAR(50) not null,
     Apellido1 VARCHAR(50) NOT NULL,
-    Apellido2 varchar(50),
+    Apellido2 VARCHAR(50),
     Direccion VARCHAR(150) NOT NULL,
     Email VARCHAR(150) UNIQUE,
-    Contrasena varchar (20) NOT NULL
+    Contrasena VARCHAR (20) NOT NULL
 );
 
 -- Tabla Coche
@@ -40,7 +40,7 @@ CREATE TABLE Coche (
     Placa VARCHAR (7),
     Color VARCHAR (50),
     Fecha_Registro DATE,
-    Estado text
+    Estado ENUM("En Alquiler", "En Mantenimiento", "Reservado", "Disponible")
 );
 
 -- Tabla Alquiler

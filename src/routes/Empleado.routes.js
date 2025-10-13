@@ -4,10 +4,10 @@ import { obtenerEmpleados, obtenerEmpleado, registrarEmpleado, eliminarEmpleado,
 const router = Router();
 
 // Rutas
-router.get('/Empleado', obtenerEmpleados);
+router.get('/Empleados', obtenerEmpleados);
 
 // Ruta para obtener un cliente por su ID
-router.get('/Empleados/:Id_Empleado', obtenerEmpleado);
+router.get('/Empleado/:Id_Empleado', obtenerEmpleado);
 
 // Ruta para registrar una nueva Categoría
 router.post('/registrarEmpleado', registrarEmpleado);

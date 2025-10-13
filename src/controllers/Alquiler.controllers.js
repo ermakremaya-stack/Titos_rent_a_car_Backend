@@ -40,7 +40,7 @@ export const registrarAlquiler = async (req, res) => {
             'INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES (?, ?)',
             [fecha_inicio, fecha_fin]
         );
-        res.status(201).json({ id_alquiler: result.insertId });
+        res.status(201).json({ id_alquiler: result.insertId});
     } catch (error) {
         return res.status(500).json({
             mensaje: 'Ha ocurrido un error al registrar el alquiler.',

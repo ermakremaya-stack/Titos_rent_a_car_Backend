@@ -42,17 +42,19 @@ export const registrarEmpleado = async (req, res) => {
             Apellido1,
             Apellido2,
             Direccion,
-            Email
+            Email,
+            Contrasena
         } = req.body;
         const [result] = await pool.query(
-            'INSERT INTO Empleado (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO Empleado (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [Cedula,
             Nombre1,
             Nombre2,
             Apellido1,
             Apellido2,
             Direccion,
-            Email]
+            Email,
+            Contrasena]
         );
         res.status(201).json({ Id_Empleado: result.insertId });
     } catch (error) {
@@ -86,11 +88,11 @@ export const eliminarEmpleado = async (req, res) => {
 export const actualizarEmpleado = async (req, res) => {
     try {
         const Id_Empleado = req.params.Id_Empleado;
-        const { Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email } = req.body;
+        const { Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena} = req.body;
 
         const [result] = await pool.query(
-            'UPDATE Empleado SET Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ? WHERE Id_Empleado = ?',
-            [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Id_Empleado]
+            'UPDATE Empleado SET Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ?, Contrasena = ? WHERE Id_Empleado = ?',
+            [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena, Id_Empleado]
         );
         if (result.affectedRows === 0) {
             return res.status(404).json({

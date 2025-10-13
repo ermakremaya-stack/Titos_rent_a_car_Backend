@@ -38,7 +38,7 @@ export const crearUsuario = async (req, res) => {
     try {
         const {Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia} = req.body;
         const [result] = await pool.query('INSERT INTO Usuario (Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-             [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia]);
+            [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia]);
         res.json({
             Id_Usuario: result.insertId,
             Rol,
@@ -65,7 +65,7 @@ export const actualizarCliente = async (req, res) => {
         const { id } = req.params;
         const {Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia} = req.body;
         const [result] = await pool.query('UPDATE Usuario SET Cedula = ?, Rol = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Telefono = ?, Direccion = ?, Email = ?, Licencia = ? WHERE Id_Usuario = ?',
-             [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, id]);
+            [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, id]);
         if (result.affectedRows === 0) {
             return res.status(404).json({
                 mensaje: 'Usuario no encontrado.'

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { obtenerDetalle_Mantenimiento,obtenerDetalle_Mantenimientos, registrarDetalle_Mantenimiento, eliminarDetalle_Mantenimiento,actualizarDetalle_Mantenimiento } from '../controllers/Detalle_Mantenimiento.controllers.js';
+import { obtenerDetalle_Mantenimiento, obtenerDetalle_Mantenimientos, registrarDetalle_Mantenimiento, eliminarDetalle_Mantenimiento,actualizarDetalle_Mantenimiento } from '../controllers/Detalle_Mantenimiento.controllers.js';
 
 const router = Router();
 

@@ -18,9 +18,8 @@ export const obtenerUsuario = async (req, res) => {
 
 export const obtenerUsuarioPorId = async (req, res) => {
     try {
-        const { id } = req.params;
-        const [result] = await pool.query('SELECT * FROM Usuario WHERE Id_Usuario = ?', [id]);
-        if (result.length === 0) {
+        const [result] = await pool.query('SELECT * FROM Usuario WHERE Id_Usuario = ?', [req.params.Id_Usuario]);
+        if (result.length <= 0) {
             return res.status(404).json({
                 mensaje: 'Usuario no encontrado.'
             });
@@ -36,9 +35,9 @@ export const obtenerUsuarioPorId = async (req, res) => {
 // Crear nueva usuario
 export const crearUsuario = async (req, res) => {
     try {
-        const {Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia} = req.body;
-        const [result] = await pool.query('INSERT INTO Usuario (Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia]);
+        const {Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena} = req.body;
+        const [result] = await pool.query('INSERT INTO Usuario (Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena]);
         res.json({
             Id_Usuario: result.insertId,
             Rol,
@@ -50,7 +49,8 @@ export const crearUsuario = async (req, res) => {
             Telefono,
             Direccion,
             Email,
-            Licencia
+            Licencia,
+            Contrasena
         });
     } catch (error) {
         return res.status(500).json({
@@ -60,17 +60,22 @@ export const crearUsuario = async (req, res) => {
     } };
 
 // Actualizar usuario por ID 
-export const actualizarCliente = async (req, res) => {
+export const actualizarUsuario = async (req, res) => {
     try {
-        const { id } = req.params;
-        const {Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia} = req.body;
-        const [result] = await pool.query('UPDATE Usuario SET Cedula = ?, Rol = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Telefono = ?, Direccion = ?, Email = ?, Licencia = ? WHERE Id_Usuario = ?',
-            [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, id]);
+        const Id_Usuario = req.params.Id_Usuario;
+        const {Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena} = req.body;
+        const [result] = await pool.query(
+            'UPDATE Usuario SET Cedula = ?, Rol = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Telefono = ?, Direccion = ?, Email = ?, Licencia = ?, Contrasena = ? WHERE Id_Usuario = ?',
+            [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena, Id_Usuario]);
         if (result.affectedRows === 0) {
             return res.status(404).json({
                 mensaje: 'Usuario no encontrado.'
             });
-        } } catch (error) {
+        } 
+        res.status(200).json({
+            mensaje: `Usuario con ID ${Id_Usuario} actualizado exitosamente.`
+        });
+        }catch (error) {
         return res.status(500).json({
             mensaje: 'Ha ocurrido un error al actualizar el usuario.',
             error: error
@@ -86,7 +91,8 @@ export const actualizarCliente = async (req, res) => {
         Telefono,
         Direccion,
         Email,
-        Licencia
+        Licencia,
+        Contrasena
     });
 };
 

@@ -68,3 +68,29 @@ export const eliminarCoche = async (req, res) => {
         });
     }
 };
+
+// Actualizar un coche por su ID
+export const actualizarCoche = async (req, res) => {
+    try {
+        const Id_Coche = req.params.Id_Coche;
+        const { marca, modelo, anio, placa, color, fecha_registro, estado } = req.body;
+
+        const [result] = await pool.query(
+            'UPDATE Coche SET Marca = ?, Modelo = ?, Anio = ?, Placa = ?, Color = ?, fecha_registro = ?, Estado = ? WHERE Id_Coche = ?',
+            [marca, modelo, anio, placa, color, fecha_registro, estado, Id_Coche]
+        );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                mensaje: `Error al actualizar el empleado. El ID ${Id_Coche} no fue encontrado.`
+            });
+        }
+        res.status(200).json({
+            mensaje: `Coche con ID ${Id_Coche} actualizado exitosamente.`
+        });
+    } catch (error) {
+        return res.status(500).json({
+            mensaje: "Ha ocurrido un error al actualizar el coche.",
+            error: error
+        });
+    }
+};

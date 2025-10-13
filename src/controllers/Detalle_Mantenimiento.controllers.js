@@ -35,7 +35,7 @@ mensaje: 'Ha ocurrido un error al leer los datos de los Detalle_Mantenimiento.'
 };
 
 // Registrar un nueva Detalle_Mantenimiento
-export const registrarDeetalle_Mantenimiento = async (req, res) => {
+export const registrarDetalle_Mantenimiento = async (req, res) => {
 try {
 const {   Id_Mantenimiento ,  Id_Empleado ,  Id_Coche , Observaciones , Recomendaciones , Partes_Cambiadas } = req.body;
 const [result] = await pool.query(

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { obtenerUsuario, registrarUsuario, eliminarUsuario} from '../controllers/Usuario.controllers.js';
+import { obtenerUsuario, obtenerUsuarioPorId, crearUsuario, eliminarUsuario, actualizarCliente} from '../controllers/Usuario.controllers.js';
 
 const router = Router();
 
@@ -8,13 +8,13 @@ router.get('/Usuario', obtenerUsuario);
 export default router;
 
 //rutas usuario por id
-router.get('/Usuario/:id_Usuario', obtenerUsuario);
+router.get('/Usuario/:id_Usuario', obtenerUsuarioPorId);
 
 //rutas para registrar un nuevo usuario
-router.post('/Usuario', registrarUsuario);
+router.post('/Usuario', crearUsuario);
 
 //rutas para actualizar un usuario
-router.put('/Usuario/:id_Usuario', obtenerUsuario);
+router.put('/Usuario/:id_Usuario', actualizarCliente);
 
 //rutas para eliminar un usuario
 router.delete('/Usuario/:id_Usuario', eliminarUsuario);

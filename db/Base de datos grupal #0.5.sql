@@ -467,32 +467,6 @@ INSERT INTO Detalle_Mantenimiento (Id_Mantenimiento, Id_Empleado, Id_Coche, Obse
 -- =====================================================================================================
 -- ===============================PROCEDURE=============================================
 
--- ===============================================
--- PROCEDIMIENTO: InsertarEmpleado
--- ===============================================
-
--- ******************************************************
-
--- ===============================================
--- PROCEDIMIENTO: ActualizarEmpleado
--- ===============================================
-
--- ===============================================
--- PROCEDIMIENTO: EliminarEmpleado
--- ===============================================
-DELIMITER //
-CREATE PROCEDURE EliminarEmpleado (
-    IN p_Id_Empleado INT
-)
-BEGIN
-    DELETE FROM Empleado
-    WHERE Id_Empleado = p_Id_Empleado;
-END //
-DELIMITER ;
-
--- Ejemplo de uso:
-CALL EliminarEmpleado(2);
-
 -- ==================================PROCEDIMIENTOS ALMACENADOS COCHES=================================
 
 -- CREAR PROCEDIMIENTOS DE CRUD COCHE
@@ -520,6 +494,7 @@ CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12345', 'Rojo', '2024-01-15', 'Dis
 
 DELIMITER //
 CREATE PROCEDURE ActualizarCoche(
+	IN p_Id_Coche INT, 
 	IN p_Placa VARCHAR (10),
     IN p_Marca VARCHAR (50),
     IN p_Modelo VARCHAR (50),
@@ -537,11 +512,11 @@ UPDATE Coche
     Color = p_Color,
     Fecha_Registro = p_Fecha_Registro,
     Estado = p_Estado
-    WHERE Placa = p_Placa;
+    WHERE Id_Coche = p_Id_Coche;
 END //
 DELIMITER ;
 
-CALL ActualizarCoche('ABC123', 'Toyota', 'Corolla', 2020, 'Rojo', '2023-10-22', 'En Alquiler');
+CALL ActualizarCoche(1, 'ABC123', 'Toyota', 'Corolla', 2020, 'Rojo', '2023-10-22', 'En Alquiler');
 
 -- CORREGIR LA TABLA DE COCHE Y QUITAR EL DATETIME Y PONER SOLO DATE
 
@@ -550,16 +525,16 @@ CALL ActualizarCoche('ABC123', 'Toyota', 'Corolla', 2020, 'Rojo', '2023-10-22', 
 DELIMITER //
 
 CREATE PROCEDURE EliminarCoche (
-    IN p_Placa VARCHAR(150)  -- Placa del coche que vamos a eliminar
+    IN p_Id_Coche INT  -- Placa del coche que vamos a eliminar
 )
 BEGIN
     DELETE FROM Coche
-    WHERE Placa = p_Placa;  -- Se elimina el coche basado en la placa
+    WHERE Id_Coche = p_Id_Coche;  -- Se elimina el coche basado en la placa
 END //
 
 DELIMITER ;
 
-CALL EliminarCoche('ABC123');
+CALL EliminarCoche('1');
 
 -- ==================================CPROCEDIMIENTOS ALMACENADOS USUARIO=================================
 -- insertar
@@ -639,7 +614,7 @@ CALL ActualizarUsuario(
 
 
 
--- eliminar
+-- ELIMINAR
 DELIMITER //
 CREATE PROCEDURE EliminarUsuario (
     IN p_Id_Usuario INT

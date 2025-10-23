@@ -465,7 +465,89 @@ INSERT INTO Detalle_Mantenimiento (Id_Mantenimiento, Id_Empleado, Id_Coche, Obse
 (5, 5, 19, 'Llantas nuevas instaladas', 'Rotar cada 10,000 km', '4 Llantas');
 
 -- =====================================================================================================
--- ===============================PROCEDURE=============================================
+
+
+
+-- ==================================PROCEDIMIENTOS ALMACENADOS EMPLEADO=================================
+
+-- ===============================================
+-- PROCEDIMIENTO: InsertarEmpleado
+-- ===============================================
+DELIMITER //
+CREATE PROCEDURE InsertarEmpleado (
+    IN p_Rol ENUM('Administrador','Mecánico','Agente de alquiler'),
+    IN p_Cedula VARCHAR(16),
+    IN p_Nombre1 VARCHAR(50),
+    IN p_Nombre2 VARCHAR(50),
+    IN p_Apellido1 VARCHAR(50),
+    IN p_Apellido2 VARCHAR(50),
+    IN p_Direccion VARCHAR(100),
+    IN p_Email VARCHAR(50),
+    IN p_Contrasena VARCHAR (150)
+)
+BEGIN
+    INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion,  Email, Contrasena)
+    VALUES (p_Rol, p_Cedula, p_Nombre1, p_Nombre2, p_Apellido1, p_Apellido2, p_Direccion, p_Email, p_Contrasena);
+END //
+DELIMITER ;
+
+-- Ejemplo de uso:
+CALL InsertarEmpleado('Agente de alquiler', '121-098424-100C', 'Carlos', 'Andrés', 'Martínez', 'López', 'León', 'carlo13@gmail.com', 'C202401153');
+
+
+-- ===============================================
+-- PROCEDIMIENTO: ActualizarEmpleado
+-- ===============================================
+DELIMITER //
+CREATE PROCEDURE ActualizarEmpleado (
+    IN p_Id_Empleado INT,
+    IN p_Rol ENUM('Administrador','Mecánico','Agente de alquiler'),
+    IN p_Cedula VARCHAR(16),
+    IN p_Nombre1 VARCHAR(50),
+    IN p_Nombre2 VARCHAR(50),
+    IN p_Apellido1 VARCHAR(50),
+    IN p_Apellido2 VARCHAR(50),
+    IN p_Direccion VARCHAR(100),
+    IN p_Email VARCHAR(50),
+    IN p_Contrasena VARCHAR (150)
+    
+)
+BEGIN
+    UPDATE Empleado
+    SET 
+		Rol = p_Rol,
+        Cedula = p_Cedula,
+        Nombre1 = p_Nombre1,
+        Nombre2 = p_Nombre2,
+        Apellido1 = p_Apellido1,
+        Apellido2 = p_Apellido2,
+        Direccion = p_Direccion,
+        Email = p_Email,
+        Contrasena = p_Contrasena
+    WHERE Id_Empleado = p_Id_Empleado;
+END //
+DELIMITER ;
+
+-- Ejemplo de uso:
+CALL ActualizarEmpleado( '1' ,'Administrador', "121-098487-100C", 'Carlos', 'Andrés', 'Martínez', 'López', 'Managua', 'Carlo12@gmail.com', '77777777');
+
+
+-- ===============================================
+-- PROCEDIMIENTO: EliminarEmpleado
+-- ===============================================
+DELIMITER //
+CREATE PROCEDURE EliminarEmpleado (
+    IN p_Id_Empleado INT
+)
+BEGIN
+    DELETE FROM Empleado
+    WHERE Id_Empleado = p_Id_Empleado;
+END //
+DELIMITER ;
+
+-- Ejemplo de uso:
+CALL EliminarEmpleado(1);
+
 
 -- ==================================PROCEDIMIENTOS ALMACENADOS COCHES=================================
 

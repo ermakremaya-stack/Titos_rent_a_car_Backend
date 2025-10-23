@@ -4,10 +4,10 @@ USE BD_rentacar_G3;
 -- Tabla Cliente
 CREATE TABLE Usuario (
     Id_Usuario INT PRIMARY KEY AUTO_INCREMENT,
-    ROL ENUM('Usuario'),
+    ROL ENUM('Usuario') DEFAULT "Usuario",
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
-    Nombre2 VARCHAR(50) NOT NULL,
+    Nombre2 VARCHAR(50),
     Apellido1 VARCHAR(50) NOT NULL,
     Apellido2 VARCHAR(50),
     Telefono VARCHAR(8) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE Usuario (
 -- Tabla Empleado
 CREATE TABLE Empleado (
     Id_Empleado INT PRIMARY KEY AUTO_INCREMENT,
-    Rol VARCHAR (50),
+    Rol ENUM ("Administrador", "Mecánico", "Agente de alquiler"),
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
     Nombre2 VARCHAR(50) not null,
@@ -40,7 +40,7 @@ CREATE TABLE Coche (
     Placa VARCHAR (7),
     Color VARCHAR (50),
     Fecha_Registro DATE,
-    Estado ENUM("En Alquiler", "En Mantenimiento", "Reservado", "Disponible")
+    Estado ENUM("En Alquiler", "En Mantenimiento", "Disponible")
 );
 
 -- Tabla Alquiler
@@ -87,11 +87,11 @@ CREATE TABLE Detalle_Mantenimiento (
 
 -- ====================BITACORA================
 CREATE TABLE IF NOT EXISTS bitacora_general (
-    id_bitacora INT AUTO_INCREMENT PRIMARY KEY,
-    tabla_afectada VARCHAR(50) NOT NULL,
-    tipo_cambio VARCHAR(20) NOT NULL,
-    usuario VARCHAR(100) NOT NULL,
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    Id_Bitacora INT AUTO_INCREMENT PRIMARY KEY,
+    Tabla_Afectada VARCHAR(50) NOT NULL,
+    Tipo_Cambio VARCHAR(20) NOT NULL,
+    Usuario VARCHAR(100) NOT NULL,
+    Fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 -- =============================================
 
@@ -303,6 +303,38 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+-- ####################################TRIGGERS DIANMICOS COCHES#########################################
+-- #########################CAMBIAR EL ESTADO DE UN COCHE ############################
+DELIMITER $$
+
+CREATE TRIGGER trg_Coche_En_Alquiler
+AFTER INSERT ON Detalle_Alquiler
+FOR EACH ROW
+BEGIN
+    UPDATE Coche
+    SET Estado = 'En Alquiler'
+    WHERE Id_Coche = NEW.Id_Coche;
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_Coche_En_Mantenimiento
+AFTER INSERT ON Detalle_Mantenimiento
+FOR EACH ROW
+BEGIN
+    UPDATE Coche
+    SET Estado = 'En Mantenimiento'
+    WHERE Id_Coche = NEW.Id_Coche;
+END $$
+
+DELIMITER ;
+
+
 -- ============================================================================
 
 -- =================================INSERTS===========================================
@@ -431,579 +463,218 @@ INSERT INTO Detalle_Mantenimiento (Id_Mantenimiento, Id_Empleado, Id_Coche, Obse
 (3, 3, 9, 'Batería vieja reemplazada', 'Mantener bornes limpios', 'Batería'),
 (4, 4, 13, 'Sistema eléctrico inspeccionado', 'Revisar cada 6 meses', 'Cableado'),
 (5, 5, 19, 'Llantas nuevas instaladas', 'Rotar cada 10,000 km', '4 Llantas');
--- -------------------------------------------------------------------------------------
-
--- Editar
-
--- Cliente
-UPDATE Cliente 
-SET Nombre1 = 'NuevoNombre', Apellido2 = 'NuevoApellido' 
-WHERE Id_Cliente = 1;
-
--- Empleado
-UPDATE Empleado 
-SET Email = 'IngenieroDetuCorazon@gmail.com', Direccion = 'Nueva Dirección' 
-WHERE Id_Empleado = 1;
-
--- Coche
-UPDATE Coche 
-SET Estado = 'En Mantenimiento', Color = 'Azul Oscuro' 
-WHERE Id_Coche = 1;
-
--- Alquiler
-UPDATE Alquiler 
-SET Fecha_Fin = '2024-04-15' 
-WHERE Id_Alquiler = 1;
-
--- Detalle_Alquiler
-UPDATE Detalle_Alquiler 
-SET Precio_Total = 750.00 
-WHERE Id_Detalle_Alquiler = 1;
-
--- Mantenimiento
-UPDATE Mantenimiento 
-SET Costo = 120.00, Justificacion = 'Cambio preventivo de aceite' 
-WHERE Id_Mantenimiento = 1;
-
--- Detalle_Mantenimiento
-UPDATE Detalle_Mantenimiento 
-SET Observaciones = 'Revisado sin novedades' 
-WHERE Id_Detalle_Mantenimiento = 1;
-
--- --------------------------------------------------------------------------------
--- Eliminar
-
--- Cliente
-DELETE FROM Cliente 
-WHERE Id_Cliente = 1;
-
--- Empleado
-DELETE FROM Empleado 
-WHERE Id_Empleado = 1;
-
--- Coche
-DELETE FROM Coche 
-WHERE Id_Coche = 1;
-
--- Alquiler
-DELETE FROM Alquiler 
-WHERE Id_Alquiler = 1;
-
--- Detalle_Alquiler
-DELETE FROM Detalle_Alquiler 
-WHERE Id_Detalle_Alquiler = 1;
-
--- Mantenimiento
-DELETE FROM Mantenimiento 
-WHERE Id_Mantenimiento = 1;
-
--- Detalle_Mantenimiento
-DELETE FROM Detalle_Mantenimiento 
-WHERE Id_Detalle_Mantenimiento = 1;
-
--- ----------------------------------------------------------------------------------
-
-
-
-
-
 
 -- =====================================================================================================
--- Reporte de alquileres 
-SELECT 
-    a.Id_Alquiler, 
-    a.Fecha_Inicio, 
-    a.Fecha_Fin, 
-    c.Nombre1 AS Cliente_Nombre1,
-    c.Apellido AS Cliente_Apellido1,
-    co.Marca AS Coche_Marca,
-    co.Modelo AS Coche_Modelo,
-    co.Placa AS Coche_Placa,
-    d.Precio_Total
-FROM Alquiler a
-JOIN Detalle_Alquiler d ON a.Id_Alquiler = d.Id_Alquiler
-JOIN Cliente c ON d.Id_Cliente = c.Id_Cliente
-JOIN Coche co ON d.Id_Coche = co.Id_Coche;
-
-
-
--- Reporte de mantenimiento 
-SELECT 
-    m.Id_Mantenimiento, 
-    m.Descripcion, 
-    m.Fecha_Inicio, 
-    m.Fecha_Fin, 
-    d.Observaciones, 
-    d.Recomendaciones, 
-    d.Partes_Cambiadas, 
-    e.Nombre1,
-    e.Apellido1, 
-    co.Marca AS Coche_Marca, 
-    co.Modelo AS Coche_Modelo
-FROM Mantenimiento m
-LEFT JOIN Detalle_Mantenimiento d ON m.Id_Mantenimiento = d.Id_Mantenimiento
-LEFT JOIN Empleado e ON d.Id_Empleado = e.Id_Empleado
-LEFT JOIN Coche co ON d.Id_Coche = co.Id_Coche;
-    
-    
--- Numeros de mantenimiento de un empleado
-SELECT 
-    E.Nombre1,
-    E.Apellido1,
-    COUNT(DM.Id_Coche) AS Total_Coches_Reparados
-FROM Detalle_Mantenimiento DM
-JOIN Empleado E ON DM.Id_Empleado = E.Id_Empleado
-GROUP BY E.Id_Empleado
-ORDER BY Total_Coches_Reparados DESC
-LIMIT 1;
-
-
--- ================================VISTAS===========================
-
--- vistas de Empleados
-CREATE VIEW Vista_Empleado_Mayor_Reparador AS
-SELECT 
-    E.Id_Empleado,
-    E.Nombre1,
-    E.Apellido1,
-    COUNT(DM.Id_Coche) AS Total_Coches_Reparados
-FROM Detalle_Mantenimiento DM
-JOIN Empleado E ON DM.Id_Empleado = E.Id_Empleado
-GROUP BY E.Id_Empleado
-ORDER BY Total_Coches_Reparados DESC
-LIMIT 1;
-
-SELECT * FROM Vista_Empleado_Mayor_Reparador;
-
--- vista de estado de coches
-CREATE VIEW Vista_Vehiculos_Estado AS
-SELECT 
-    co.Id_Coche,
-    co.Marca,
-    co.Modelo,
-    co.Anio,
-    co.Placa,
-    co.Color,
-    co.Fecha_Registro,
-    co.Estado
-FROM 
-    Coche co;
-
-select * from Vista_Vehiculos_Estado;
-
-
--- Vista Cliente
-CREATE VIEW Vista_Cliente AS
-SELECT 
-    Id_Cliente,
-    Nombre1,
-    Apellido1,
-    Cedula,
-    Telefono,
-    Email,
-    Direccion
-FROM Cliente;
-
-select * from Vista_Cliente;
-
--- Vista Alquiler
-CREATE VIEW Vista_Alquiler AS
-SELECT 
-    A.Id_Alquiler,
-    A.Fecha_Inicio,
-    A.Fecha_Fin
-FROM Alquiler A;
-
-SELECT * FROM Vista_Alquiler;
-
-
--- Vista Detalle Alquiler
-CREATE VIEW Vista_Detalle_Alquiler AS
-SELECT 
-    DA.Id_Detalle_Alquiler,
-    DA.Id_Alquiler,
-    DA.Id_Coche,
-    C.Marca AS Marca_Coche,
-    C.Modelo AS Modelo_Coche,
-    DA.Precio_Total
-FROM Detalle_Alquiler DA
-JOIN Coche C ON DA.Id_Coche = C.Id_Coche;
-
-SELECT * FROM Vista_Detalle_Alquiler;
-
-
--- Vista Mantenimiento
-CREATE VIEW Vista_Mantenimiento AS
-SELECT 
-    M.Id_Mantenimiento,
-    M.Costo,
-    M.Justificacion,
-    M.Descripcion,
-    M.Fecha_Inicio,
-    M.Fecha_Fin
-FROM Mantenimiento M;
-
-SELECT * FROM Vista_Mantenimiento;
-
--- Vista Detalle Mantenimiento
-CREATE VIEW Vista_Detalle_Mantenimiento AS
-SELECT 
-    DM.Id_Detalle_Mantenimiento,
-    DM.Id_Mantenimiento,
-    DM.Id_Empleado,
-    DM.Id_Coche,
-    C.Marca,
-    C.Modelo,
-    C.Placa,
-    DM.Observaciones,
-    DM.Recomendaciones,
-    DM.Partes_Cambiadas,
-    M.Costo
-FROM Detalle_Mantenimiento DM
-JOIN Mantenimiento M ON DM.Id_Mantenimiento = M.Id_Mantenimiento
-JOIN Coche C ON DM.Id_Coche = C.Id_Coche;
-
-SELECT * FROM Vista_Detalle_Mantenimiento;
-
--- Vista de todos los coches
-CREATE VIEW Coches_vista AS
-SELECT Modelo, Marca, Estado
-FROM Coche
-WHERE Id_Coche; 
-
--- Vista de coches disponibles
-CREATE VIEW vista_coches_disponibles AS
-SELECT 
-    c.Id_Coche,
-    c.Marca,
-    c.Modelo,
-    c.Anio,
-    c.Placa,
-    c.Color,
-    c.Fecha_Registro,
-    c.Estado
-FROM 
-    Coche c
-WHERE 
-    c.Estado = 'Disponible';
-    
-    
-    -- Vista de alquileres más altos en ventas, es decir cuales son las más altas y bajas
-CREATE VIEW vista_alquileres_extremos AS
-SELECT 
-    da.Id_Detalle_Alquiler,
-    da.Id_Alquiler,
-    da.Id_Coche,
-    da.Id_Cliente,
-    Co.Marca,
-    Co.Modelo,
-    Co.Placa,
-    Al.Fecha_Inicio,
-    Al.Fecha_Fin,
-    MAX(da.Precio_Total) as "Más alto",
-    MIN(da.Precio_Total) as "Más Bajo"
-FROM 
-    Detalle_Alquiler da
-JOIN Alquiler Al ON da.Id_Detalle_Alquiler = Al.Id_Alquiler
-JOIN Coche Co ON da.Id_Detalle_Alquiler = Co.Id_Coche
-GROUP BY da.Id_Detalle_Alquiler;
-
-    
-
-
-    
-    -- Vista de coches con más tiempo alquilados
-CREATE VIEW Vista_Coches_Mas_Tiempo_Alquilados AS
-SELECT 
-    Coche.Id_Coche,
-    Coche.Marca,
-    Coche.Modelo,
-    Coche.Placa,
-    SUM(DATEDIFF(Alquiler.Fecha_Fin, Alquiler.Fecha_Inicio)) AS Total_Dias_Alquilado
-FROM 
-    Detalle_Alquiler
-JOIN 
-    Coche ON Detalle_Alquiler.Id_Coche = Coche.Id_Coche
-JOIN 
-    Alquiler ON Detalle_Alquiler.Id_Alquiler = Alquiler.Id_Alquiler
-GROUP BY 
-    Coche.Id_Coche, Coche.Marca, Coche.Modelo, Coche.Placa
-ORDER BY 
-    Total_Dias_Alquilado DESC;
-
--- Vista de clientes más frecuentes
-CREATE VIEW Clientes_Mas_Frecuentes AS
-SELECT 
-    c.Id_Cliente,
-    c.Nombre1,
-    c.Apellido1,
-    COUNT(*) AS Veces_Alquilado
-FROM 
-    Detalle_Alquiler da
-JOIN 
-    Cliente c ON da.Id_Cliente = c.Id_Cliente
-GROUP BY 
-    c.Id_Cliente, c.Nombre1, c.Apellido1
-ORDER BY 
-    Veces_Alquilado DESC;
-
--- Vista de coche actualmente en mantenimiento
-CREATE VIEW Coches_En_Mantenimiento AS
-SELECT 
-    c.Id_Coche,
-    c.Marca,
-    c.Modelo,
-    c.Placa,
-    m.Fecha_Inicio,
-    m.Fecha_Fin
-FROM 
-    Detalle_Mantenimiento dm
-JOIN 
-    Coche c ON dm.Id_Coche = c.Id_Coche
-JOIN 
-    Mantenimiento m ON dm.Id_Mantenimiento = m.Id_Mantenimiento
-WHERE 
-    c.Estado = "En Mantenimiento";
-    
-    
-    -- Alquileres activos hoy
-CREATE VIEW Alquileres_Activos_Hoy AS
-SELECT 
-    a.Id_Alquiler,
-    da.Id_Cliente,
-    concat(Cl.Nombre1, " ", Cl.Nombre2, " ", Cl.Apellido1, " ", Cl.Apellido2) AS Nombre,
-    da.Id_Coche,
-    Co.Marca,
-    Co.Modelo,
-    Co.Placa,
-    a.Fecha_Inicio,
-    a.Fecha_Fin
-FROM 
-    Alquiler a
-JOIN 
-    Detalle_Alquiler da ON a.Id_Alquiler = da.Id_Alquiler
-JOIN 
-    Cliente Cl ON a.Id_Alquiler = Cl.Id_Cliente
-JOIN 
-    Coche Co ON a.Id_Alquiler = Co.Id_Coche
-WHERE 
-    CURDATE() BETWEEN DATETIME(a.Fecha_Inicio) AND DATE(a.Fecha_Fin);
-
-SELECT * FROM Alquileres_Activos_Hoy;
--- ==================================================================================
-
-
-
-
-
-
-
 -- ===============================PROCEDURE=============================================
--- procedimiento almacenado
 
--- Insertar nuevo cliente
+-- ===============================================
+-- PROCEDIMIENTO: InsertarEmpleado
+-- ===============================================
+
+-- ******************************************************
+
+-- ===============================================
+-- PROCEDIMIENTO: ActualizarEmpleado
+-- ===============================================
+
+-- ===============================================
+-- PROCEDIMIENTO: EliminarEmpleado
+-- ===============================================
 DELIMITER //
-
-CREATE PROCEDURE InsertarClienteSimple (
-    IN cedula VARCHAR(16),
-    IN nombre1 VARCHAR(50),
-    IN nombre2 VARCHAR(50),
-    IN apellido1 VARCHAR(50),
-    IN apellido2 VARCHAR(50),
-    IN telefono VARCHAR(8),
-    IN direccion TEXT,
-    IN email VARCHAR(100),
-    IN licencia VARCHAR(8)
+CREATE PROCEDURE EliminarEmpleado (
+    IN p_Id_Empleado INT
 )
 BEGIN
-    INSERT INTO Cliente (
-        Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia
-    )
-    VALUES (
-        cedula, nombre1, nombre2, apellido1, apellido2, telefono, direccion, email, licencia
-    );
-END;
-
-//
-
+    DELETE FROM Empleado
+    WHERE Id_Empleado = p_Id_Empleado;
+END //
 DELIMITER ;
 
-CALL InsertarClienteSimple(
-    '123456789',
-    'Ana',
-    'Lucía',
-    'Ramírez',
-    'Torres',
-    '88887777',
-    'Heredia, Costa Rica',
-    'ana.lucia@email.com',
-    'L123456'
-);
+-- Ejemplo de uso:
+CALL EliminarEmpleado(2);
 
--- ---------------------------------------------------
--- Actualizar estado de coche a “mantenimiento”
-DELIMITER //
+-- ==================================PROCEDIMIENTOS ALMACENADOS COCHES=================================
 
-CREATE PROCEDURE ActualizarEstadoCoche (
-    IN id_coche INT
-)
-BEGIN
-    UPDATE Coche
-    SET Estado = 'En Mantenimiento'
-    WHERE Id_Coche = id_coche;
-END;
-//
+-- CREAR PROCEDIMIENTOS DE CRUD COCHE
 
-DELIMITER ;
-
-CALL ActualizarEstadoCoche(3);
-
--- --------------------------------------------------------
--- Actualizar estado de coche a “Disponible” 
-DELIMITER //
-
-CREATE PROCEDURE ActualizarCocheDisponible (
-    IN id_coche INT
-)
-BEGIN
-    UPDATE Coche
-    SET Estado = 'Disponible'
-    WHERE Id_Coche = id_coche;
-END;
-//
-
-DELIMITER ;
-
-CALL ActualizarCocheDisponible(5);
-
-
--- -------------------------------------------------------------
--- Actualizar estado de coche a “Alquilado”
-DELIMITER //
-
-CREATE PROCEDURE ActualizarEstadoCocheAlquilado (
-    IN id_coche INT
-)
-BEGIN
-    UPDATE Coche
-    SET Estado = "En Alquiler"
-    WHERE Id_Coche = id_coche;
-END;
-//
-
-DELIMITER ;
-
-CALL ActualizarEstadoCocheAlquilado(7);
-
--- -----------------------------------------------------------------
-
--- Insertar Cliente
-DELIMITER //
-CREATE PROCEDURE InsertarCliente (
-    IN p_Cedula VARCHAR(16),
-    IN p_Nombre1 VARCHAR(50),
-    IN p_Apellido1 VARCHAR(50),
-    IN p_Telefono VARCHAR(8),
-    IN p_Direccion TEXT,
-    IN p_Email VARCHAR(100),
-    IN p_Licencia VARCHAR(8)
-)
-BEGIN
-    INSERT INTO Cliente (Cedula, Nombre1, Apellido1, Telefono, Direccion, Email, Licencia)
-    VALUES (p_Cedula, p_Nombre1, p_Apellido1, p_Telefono, p_Direccion, p_Email, p_Licencia);
-END;
-//
-DELIMITER ;
-
--- Llamar
-CALL InsertarCliente('001-100000-0001A', 'Juan', 'Pérez', '88889999', 'Managua', 'juan@example.com', 'LIC1234');
-
--- ---------------------------------------------------------------------------
--- Insertar Empleado
-DELIMITER //
-CREATE PROCEDURE InsertarEmpleado (
-    IN p_Cedula VARCHAR(16),
-    IN p_Nombre1 VARCHAR(50),
-    IN p_Apellido1 VARCHAR(50),
-    IN p_Direccion VARCHAR(150),
-    IN p_Email VARCHAR(150)
-)
-BEGIN
-    INSERT INTO Empleado (Cedula, Nombre, Apellido, Direccion, Email)
-    VALUES (p_Cedula, p_Nombre, p_Apellido, p_Direccion, p_Email);
-END;
-//
-DELIMITER ;
-
--- ----------------------------------------------------------------------------
--- Llamar
-CALL InsertarEmpleado('002-200000-0002B', 'Ana', 'López', 'León', 'ana@example.com');
-
--- Insertar coche
 DELIMITER //
 CREATE PROCEDURE InsertarCoche (
     IN p_Marca VARCHAR(50),
     IN p_Modelo VARCHAR(50),
     IN p_Anio INT,
-    IN p_Placa VARCHAR(150),
-    IN p_Color VARCHAR(150),
-    IN p_Fecha_Registro DATE,
+    IN p_Placa VARCHAR(10),
+    IN p_Color VARCHAR(20),
+    IN p_Fecha_Registro DATETIME,
     IN p_Estado VARCHAR(50)
 )
 BEGIN
     INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro, Estado)
     VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color, p_Fecha_Registro, p_Estado);
-END;
-//
+END //
 DELIMITER ;
 
--- Llamar
+-- Ejemplo
 CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12345', 'Rojo', '2024-01-15', 'Disponible');
 
--- --------------------------------------------------------------------------------------
--- Insertar detalle alquiler
+
+
 DELIMITER //
-CREATE PROCEDURE InsertarDetalleAlquiler(
-    IN p_Id_Alquiler INT,
-    IN p_Id_Coche INT,
-    IN p_Id_Cliente INT,
-    IN p_Precio_Total DECIMAL(10,2)
+CREATE PROCEDURE ActualizarCoche(
+	IN p_Placa VARCHAR (10),
+    IN p_Marca VARCHAR (50),
+    IN p_Modelo VARCHAR (50),
+    IN p_Anio INT,
+    IN p_Color VARCHAR (20),
+    IN p_Fecha_Registro DATETIME,
+    IN p_Estado VARCHAR (50)
 )
 BEGIN
-    INSERT INTO Detalle_Alquiler(Id_Alquiler, Id_Coche, Id_Cliente, Precio_Total)
-    VALUES(p_Id_Alquiler, p_Id_Coche, p_Id_Cliente, p_Precio_Total);
+UPDATE Coche
+	SET 
+    Marca = p_Marca,
+    Modelo = p_Modelo,
+    Anio = p_Anio,
+    Color = p_Color,
+    Fecha_Registro = p_Fecha_Registro,
+    Estado = p_Estado
+    WHERE Placa = p_Placa;
+END //
+DELIMITER ;
+
+CALL ActualizarCoche('ABC123', 'Toyota', 'Corolla', 2020, 'Rojo', '2023-10-22', 'En Alquiler');
+
+-- CORREGIR LA TABLA DE COCHE Y QUITAR EL DATETIME Y PONER SOLO DATE
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE EliminarCoche (
+    IN p_Placa VARCHAR(150)  -- Placa del coche que vamos a eliminar
+)
+BEGIN
+    DELETE FROM Coche
+    WHERE Placa = p_Placa;  -- Se elimina el coche basado en la placa
+END //
+
+DELIMITER ;
+
+CALL EliminarCoche('ABC123');
+
+-- ==================================CPROCEDIMIENTOS ALMACENADOS USUARIO=================================
+-- insertar
+DELIMITER //
+
+CREATE PROCEDURE InsertarUsuario (
+    IN p_Cedula VARCHAR(16),
+    IN p_Nombre1 VARCHAR(50),
+    IN p_Nombre2 VARCHAR(50),
+    IN p_Apellido1 VARCHAR(50),
+    IN p_Apellido2 VARCHAR(50),
+    IN p_Telefono VARCHAR(8),
+    IN p_Direccion TEXT,
+    IN p_Email VARCHAR(100),
+    IN p_Licencia VARCHAR(8),
+    IN p_Contrasena VARCHAR(20)
+)
+BEGIN
+    INSERT INTO Usuario (
+        ROL, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena
+    ) VALUES (
+        'Usuario', p_Cedula, p_Nombre1, p_Nombre2, p_Apellido1, p_Apellido2, p_Telefono, p_Direccion, p_Email, p_Licencia, p_Contrasena
+    );
+END;
+//
+
+DELIMITER ;
+
+
+CALL InsertarUsuario(
+    '099-999999-0009Z', 'Carlos', 'Eduardo', 'Mora', 'Jimenez',
+    '88889999', 'San José', 'carlos.mora@email.com', 'LIC-Z9', 'claveSegura'
+);
+
+
+
+-- Actualizar
+DELIMITER //
+
+CREATE PROCEDURE ActualizarUsuario (
+    IN p_Id_Usuario INT,
+    IN p_Cedula VARCHAR(16),
+    IN p_Nombre1 VARCHAR(50),
+    IN p_Nombre2 VARCHAR(50),
+    IN p_Apellido1 VARCHAR(50),
+    IN p_Apellido2 VARCHAR(50),
+    IN p_Telefono VARCHAR(8),
+    IN p_Direccion TEXT,
+    IN p_Email VARCHAR(100),
+    IN p_Licencia VARCHAR(8),
+    IN p_Contrasena VARCHAR(20)
+)
+BEGIN
+    UPDATE Usuario
+    SET 
+        Cedula = p_Cedula,
+        Nombre1 = p_Nombre1,
+        Nombre2 = p_Nombre2,
+        Apellido1 = p_Apellido1,
+        Apellido2 = p_Apellido2,
+        Telefono = p_Telefono,
+        Direccion = p_Direccion,
+        Email = p_Email,
+        Licencia = p_Licencia,
+        Contrasena = p_Contrasena
+    WHERE Id_Usuario = p_Id_Usuario;
+END;
+//
+
+
+
+DELIMITER ;
+CALL ActualizarUsuario(
+    1, '099-888888-0001X', 'Carlos', 'Andrés', 'Mora', 'Jimenez',
+    '88882222', 'San Pedro', 'carlos.actualizado@email.com', 'LIC-ZX', 'nuevaClave'
+);
+
+
+
+-- eliminar
+DELIMITER //
+CREATE PROCEDURE EliminarUsuario (
+    IN p_Id_Usuario INT
+)
+BEGIN
+    DELETE FROM Usuario
+    WHERE Id_Usuario = p_Id_Usuario;
 END;
 //
 DELIMITER ;
 
-CALL InsertarDetalleAlquiler(1, 2, 3, 450.00);
+CALL EliminarUsuario(10);
 
--- ----------------------------------------------------------------------------------------
--- Insertar detalle mantenimiento
+
+-- ==================================PROCEDIMIENTOS ALMACENADOS MANTENIMIENTO=================================
+
 DELIMITER //
-CREATE PROCEDURE InsertarDetalleMantenimiento(
-    IN p_Id_Mantenimiento INT,
-    IN p_Id_Empleado INT,
-    IN p_Id_Coche INT,
-    IN p_Observaciones TEXT
+create procedure InsertMantenimientos(
+in	m_descripcion TEXT ,
+in   m_justificacion TEXT ,
+in  m_fecha_Inicio DATETIME ,
+in    m_fecha_Fin DATETIME ,
+in   m_costo DECIMAL(10,2)
 )
-BEGIN
-    INSERT INTO Detalle_Mantenimiento(Id_Mantenimiento, Id_Empleado, Id_Coche, Observaciones)
-    VALUES(p_Id_Mantenimiento, p_Id_Empleado, p_Id_Coche, p_Observaciones);
-END;
+begin 
+insert into Mantenimiento (Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, Costo) 
+values (m_descripcion, m_justificacion, m_fecha_Inicio, m_fecha_Fin, m_costo); 
+end;
 //
+
 DELIMITER ;
 
-CALL InsertarDetalleMantenimiento(1, 2, 3, 'Cambio de aceite y revisión general');
+call InsertMantenimientos('BAlbulas', 'Mantenimiento preventivo', '2025-02-10 08:00:00', '2025-02-20 10:00:00', 50.00);
 
--- ======================================================================================
-
-
-
-
-
-
-
+-- =============== Actualizar MANTENIMIENTO ===============================
 
 
 
@@ -1159,4 +830,3 @@ END$$
 DELIMITER ;
 
 SHOW TRIGGERS;
-

@@ -131,6 +131,35 @@ END$$
 
 DELIMITER ;
 
+-- ==================TRIGGERS DETALLE ALQUILER EN TABLA BITACORA===================
+
+DELIMITER $$
+CREATE TRIGGER trg_Detalle_Alquiler_insert
+AFTER INSERT ON Detalle_Alquiler
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Alquiler', 'INSERT', USER());
+END$$
+
+CREATE TRIGGER trg_Detalle_Alquiler_update
+AFTER UPDATE ON Detalle_Alquiler
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Alquiler', 'UPDATE', USER());
+END$$
+
+CREATE TRIGGER trg_Detalle_Alquiler_delete
+AFTER DELETE ON Detalle_Alquiler
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Alquiler', 'DELETE', USER());
+END$$
+
+DELIMITER ;
+
 -- ==================TRIGGERS COCHE EN TABLA BITACORA===================
 -- Triggers de coche
 DELIMITER $$
@@ -216,7 +245,34 @@ END$$
 
 DELIMITER ;
 
+-- ==================TRIGGERS DETALLE MANTENIMIENTO EN TABLA BITACORA=================== 
 
+DELIMITER $$
+CREATE TRIGGER trg_Detalle_Mantenimiento_insert
+AFTER INSERT ON Detalle_Mantenimiento
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Mantenimiento', 'INSERT', USER());
+END$$
+
+CREATE TRIGGER trg_Detalle_Mantenimiento_update
+AFTER UPDATE ON Detalle_Mantenimiento
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Mantenimiento', 'UPDATE', USER());
+END$$
+
+CREATE TRIGGER trg_Detalle_Mantenimiento_delete
+AFTER DELETE ON Detalle_Mantenimiento
+FOR EACH ROW
+BEGIN
+    INSERT INTO bitacora_general (tabla_afectada, tipo_cambio, usuario)
+    VALUES ('Detalle_Mantenimiento', 'DELETE', USER());
+END$$
+
+DELIMITER ;
 
 
 -- ==================TRIGGERS EMPLEADO EN TABLA BITACORA=================== 

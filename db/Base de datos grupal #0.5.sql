@@ -353,15 +353,15 @@ INSERT INTO Usuario (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, D
 
 
 INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES
-('Mecánico', '011-111111-0000K', 'Carmen', 'Elena', 'Morales', 'Hernandez', 'Calle Independencia 765', 'carmen.morales@email.com', 'carmen123'),
-('Mecánico', '012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com', 'sergio123'),
-('Mecánico', '013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'rosa123'),
+('Administrador', '011-111111-0000K', 'Carmen', 'Elena', 'Morales', 'Hernandez', 'Calle Independencia 765', 'carmen.morales@email.com', 'carmen123'),
+('Administrador', '012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com', 'sergio123'),
+('Administrador', '013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'rosa123'),
 ('Agente de alquiler', '014-141414-0000N', 'Eduardo', 'Alfonso', 'Vazquez', 'Rivera', 'Calle Mistral 100', 'eduardo.vazquez@email.com', 'eduardo123'),
 ('Agente de alquiler', '015-151515-0000O', 'Gabriela', 'Fernanda', 'Ruiz', 'Martinez', 'Avenida Costa Rica 234', 'gabriela.ruiz@email.com', 'gabriela123'),
 ('Agente de alquiler', '016-161616-0000P', 'Felipe', 'Antonio', 'Serrano', 'Jimenez', 'Calle Mirador 432', 'felipe.serrano@email.com', 'felipe123'),
-('Administrador', '017-171717-0000Q', 'Carla', 'Lucia', 'Castro', 'Fernandez', 'Avenida Universitaria 123', 'carla.castro@email.com', 'carla123'),
-('Administrador', '018-181818-0000R', 'David', 'Manuel', 'Mendez', 'Morales', 'Calle Las Palmas 876', 'david.mendez@email.com', 'david123'),
-('Administrador', '019-191919-0000S', 'Laura', 'Patricia', 'Salazar', 'Lopez', 'Avenida San Martin 345', 'laura.salazar@email.com', 'laura123'),
+('Mecánico', '017-171717-0000Q', 'Carla', 'Lucia', 'Castro', 'Fernandez', 'Avenida Universitaria 123', 'carla.castro@email.com', 'carla123'),
+('Mecánico', '018-181818-0000R', 'David', 'Manuel', 'Mendez', 'Morales', 'Calle Las Palmas 876', 'david.mendez@email.com', 'david123'),
+('Mecánico', '019-191919-0000S', 'Laura', 'Patricia', 'Salazar', 'Lopez', 'Avenida San Martin 345', 'laura.salazar@email.com', 'laura123'),
 ('Mecánico', '020-202020-0000T', 'Antonio', 'Carlos', 'Gonzalez', 'Vazquez', 'Calle del Bosque 654', 'antonio.gonzalez@email.com', 'antonio123');
 
 

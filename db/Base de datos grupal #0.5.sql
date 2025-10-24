@@ -37,10 +37,10 @@ CREATE TABLE Coche (
     Marca VARCHAR(50) NOT NULL,
     Modelo VARCHAR(20) NOT NULL,
     Anio INT NOT NULL,
-    Placa VARCHAR (7),
+    Placa VARCHAR (10) NOT NULL UNIQUE,
     Color VARCHAR (50),
-    Fecha_Registro DATE,
-    Estado ENUM("En Alquiler", "En Mantenimiento", "Disponible")
+    Fecha_Registro DATE NOT NULL,
+    Estado ENUM("En Alquiler", "En Mantenimiento", "Disponible") DEFAULT ('Disponible')
 );
 
 -- Tabla Alquiler
@@ -57,9 +57,9 @@ CREATE TABLE Detalle_Alquiler (
     Id_Coche INT,
     Id_Usuario INT,
     Precio_Total DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (Id_Alquiler) REFERENCES Alquiler(Id_Alquiler) ON DELETE CASCADE,
-    FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche) ON DELETE CASCADE,
-    FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id_Usuario) ON DELETE CASCADE
+    FOREIGN KEY (Id_Alquiler) REFERENCES Alquiler(Id_Alquiler) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id_Usuario) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabla Mantenimiento de Coche
@@ -80,9 +80,9 @@ CREATE TABLE Detalle_Mantenimiento (
     Observaciones TEXT,
     Recomendaciones TEXT,
     Partes_Cambiadas text,
-    FOREIGN KEY (Id_Mantenimiento) REFERENCES Mantenimiento(Id_Mantenimiento),
-    FOREIGN KEY (Id_Empleado) REFERENCES Empleado(Id_Empleado),
-    FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche)
+    FOREIGN KEY (Id_Mantenimiento) REFERENCES Mantenimiento(Id_Mantenimiento) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_Empleado) REFERENCES Empleado(Id_Empleado) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (Id_Coche) REFERENCES Coche(Id_Coche) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ====================BITACORA================
@@ -390,7 +390,6 @@ INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro, Estado) VA
 ('Kia', 'Sportage', 2021, 'ZAB234', 'Negro', '2024-03-18', 'Disponible');
 
 
-
 -- Insertar datos en la tabla Alquiler
 INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES
 ('2024-03-01 09:00:00', '2024-03-10 17:30:00'),
@@ -552,7 +551,7 @@ CALL EliminarEmpleado(1);
 -- ==================================PROCEDIMIENTOS ALMACENADOS COCHES=================================
 
 -- CREAR PROCEDIMIENTOS DE CRUD COCHE
-
+DROP PROCEDURE InsertarCoche;
 DELIMITER //
 CREATE PROCEDURE InsertarCoche (
     IN p_Marca VARCHAR(50),
@@ -566,23 +565,24 @@ CREATE PROCEDURE InsertarCoche (
 BEGIN
     INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro, Estado)
     VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color, p_Fecha_Registro, p_Estado);
+    SELECT LAST_INSERT_ID() AS Id_Coche;
 END //
 DELIMITER ;
 
 -- Ejemplo
-CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12345', 'Rojo', '2024-01-15', 'Disponible');
+CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12346', 'Rojo', '2024-01-15', 'Disponible');
 
 
 
 DELIMITER //
 CREATE PROCEDURE ActualizarCoche(
 	IN p_Id_Coche INT, 
-	IN p_Placa VARCHAR (10),
-    IN p_Marca VARCHAR (50),
+	IN p_Marca VARCHAR (50),
     IN p_Modelo VARCHAR (50),
     IN p_Anio INT,
+	IN p_Placa VARCHAR (10),
     IN p_Color VARCHAR (20),
-    IN p_Fecha_Registro DATETIME,
+    IN p_Fecha_Registro DATE,
     IN p_Estado VARCHAR (50)
 )
 BEGIN
@@ -591,6 +591,7 @@ UPDATE Coche
     Marca = p_Marca,
     Modelo = p_Modelo,
     Anio = p_Anio,
+    Placa = p_Placa,
     Color = p_Color,
     Fecha_Registro = p_Fecha_Registro,
     Estado = p_Estado
@@ -598,7 +599,7 @@ UPDATE Coche
 END //
 DELIMITER ;
 
-CALL ActualizarCoche(1, 'ABC123', 'Toyota', 'Corolla', 2020, 'Rojo', '2023-10-22', 'En Alquiler');
+CALL ActualizarCoche(1, 'Toyota', 'Corolla', 2020, 'ABC123', 'Rojo', '2023-10-22', 'En Alquiler');
 
 -- CORREGIR LA TABLA DE COCHE Y QUITAR EL DATETIME Y PONER SOLO DATE
 

@@ -4,9 +4,9 @@ import { obtenerCoches, obtenerCoche, registrarCoche, eliminarCoche, actualizarC
 const router = Router();
 
 // Rutas para realizar operaciones CRUD en la tabla Coche
-router.get('/Coche', obtenerCoches);
+router.get('/Coches', obtenerCoches);
 router.get('/Coche/:Id_Coche', obtenerCoche);
-router.post('/registrarCoche', registrarCoche);
+router.post('/registrarcoche', registrarCoche);
 router.delete('/eliminarcoche/:Id_Coche', eliminarCoche);
 router.patch('/actualizarcoche/:Id_Coche', actualizarCoche);
 

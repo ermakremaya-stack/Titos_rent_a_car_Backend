@@ -551,7 +551,6 @@ CALL EliminarEmpleado(1);
 -- ==================================PROCEDIMIENTOS ALMACENADOS COCHES=================================
 
 -- CREAR PROCEDIMIENTOS DE CRUD COCHE
-DROP PROCEDURE InsertarCoche;
 DELIMITER //
 CREATE PROCEDURE InsertarCoche (
     IN p_Marca VARCHAR(50),

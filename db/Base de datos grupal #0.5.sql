@@ -111,6 +111,7 @@ DELIMITER $$
 
 
 -- Trigger para UPDATE en Alquiler
+DELIMITER $$
 CREATE TRIGGER trg_alquiler_update
 AFTER UPDATE ON Alquiler
 FOR EACH ROW
@@ -732,6 +733,169 @@ DELIMITER ;
 call InsertMantenimientos('BAlbulas', 'Mantenimiento preventivo', '2025-02-10 08:00:00', '2025-02-20 10:00:00', 50.00);
 
 -- =============== Actualizar MANTENIMIENTO ===============================
+
+-- =============== Actualizar MANTENIMIENTO ===============================
+
+DELIMITER //
+create procedure ActualizarMantenimientos (
+IN m_Id_Mantenimiento INT
+)
+begin 
+update Mantenimiento
+set Descripcion = 'CAmbio de discos y pastillas'
+where Id_Mantenimiento = m_Id_Mantenimiento;
+end;
+//
+DELIMITER ;
+
+call ActualizarMantenimientos(1);
+
+-- ============== Eliminar Mantenimiento ===================================
+-- ELIMINAR
+DELIMITER //
+CREATE PROCEDURE EliminarMantenimiento (
+    IN p_Id_mantenimiento INT
+)
+BEGIN
+    DELETE FROM Mantenimiento
+    WHERE Id_Mantenimiento = p_Id_Mantenimiento;
+END;
+//
+DELIMITER ;
+
+CALL EliminarMantenimiento(1);
+
+-- ============= insertar detalle mantenimiento ===========================
+DELIMITER //
+
+CREATE PROCEDURE InsertDetalleMantenimiento(
+    IN m_Id_Mantenimiento INT,
+    IN m_Id_Empleado INT,
+    IN m_Id_Coche INT,
+    IN m_Observaciones TEXT,
+    IN m_Recomendaciones TEXT,
+    IN m_Partes_Cambiadas TEXT
+)
+BEGIN
+    INSERT INTO Detalle_Mantenimiento (
+        Id_Mantenimiento,
+        Id_Empleado,
+        Id_Coche,
+        Observaciones,
+        Recomendaciones,
+        Partes_Cambiadas
+    )
+    VALUES (
+        m_Id_Mantenimiento,
+        m_Id_Empleado,
+        m_Id_Coche,
+        m_Observaciones,
+        m_Recomendaciones,
+        m_Partes_Cambiadas
+    );
+END;
+//
+
+DELIMITER ;
+
+-- ========= actualizar detalles mantenimientos ===========
+DELIMITER //
+
+CREATE PROCEDURE ActualizarDetalleMantenimiento (
+    IN m_Id_Detalle_Mantenimiento INT
+)
+BEGIN
+    UPDATE Detalle_Mantenimiento
+    SET 
+        Observaciones = 'Actualización: se revisaron todas las piezas y se realizaron ajustes menores',
+        Recomendaciones = 'Revisar nuevamente en 3 meses',
+        Partes_Cambiadas = 'Pastillas de freno, aceite y filtro'
+    WHERE Id_Detalle_Mantenimiento = m_Id_Detalle_Mantenimiento;
+END;
+//
+
+DELIMITER ;
+
+
+-- ============== eliminar detalle mantenimiento =============
+DELIMITER //
+
+CREATE PROCEDURE EliminarDetalleMantenimiento (
+    IN m_Id_Detalle_Mantenimiento INT
+)
+BEGIN
+    DELETE FROM Detalle_Mantenimiento
+    WHERE Id_Detalle_Mantenimiento = m_Id_Detalle_Mantenimiento;
+END;
+//
+
+DELIMITER ;
+
+
+
+DELIMITER //
+create procedure ActualizarMantenimientos (
+IN m_Id_Mantenimiento INT
+)
+begin 
+update Mantenimiento
+set Descripcion = 'CAmbio de discos y pastillas'
+where Id_Mantenimiento = m_Id_Mantenimiento;
+end;
+//
+DELIMITER ;
+
+call ActualizarMantenimientos(1);
+
+-- ============== Eliminar Mantenimiento ===================================
+-- ELIMINAR
+DELIMITER //
+CREATE PROCEDURE EliminarMantenimiento (
+    IN p_Id_mantenimiento INT
+)
+BEGIN
+    DELETE FROM Mantenimiento
+    WHERE Id_Mantenimiento = p_Id_Mantenimiento;
+END;
+//
+DELIMITER ;
+
+CALL EliminarMantenimiento(1);
+
+-- ============= insertar detalle mantenimiento ===========================
+DELIMITER //
+
+CREATE PROCEDURE InsertDetalleMantenimiento(
+    IN m_Id_Mantenimiento INT,
+    IN m_Id_Empleado INT,
+    IN m_Id_Coche INT,
+    IN m_Observaciones TEXT,
+    IN m_Recomendaciones TEXT,
+    IN m_Partes_Cambiadas TEXT
+)
+BEGIN
+    INSERT INTO Detalle_Mantenimiento (
+        Id_Mantenimiento,
+        Id_Empleado,
+        Id_Coche,
+        Observaciones,
+        Recomendaciones,
+        Partes_Cambiadas
+    )
+    VALUES (
+        m_Id_Mantenimiento,
+        m_Id_Empleado,
+        m_Id_Coche,
+        m_Observaciones,
+        m_Recomendaciones,
+        m_Partes_Cambiadas
+    );
+END;
+//
+
+DELIMITER ;
+
+-- ========= actualizar detalles mantenimientos ===========
 
 
 

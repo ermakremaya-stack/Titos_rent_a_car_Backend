@@ -618,7 +618,7 @@ DELIMITER ;
 
 CALL EliminarCoche('1');
 
--- ==================================CPROCEDIMIENTOS ALMACENADOS USUARIO=================================
+-- ==================================PROCEDIMIENTOS ALMACENADOS USUARIO=================================
 -- insertar
 DELIMITER //
 
@@ -736,7 +736,7 @@ call InsertMantenimientos('BAlbulas', 'Mantenimiento preventivo', '2025-02-10 08
 
 
 -- ==============================FUNSIONES===============================
--- Obtener costo total de mantenimiento por coche
+/* Obtener costo total de mantenimiento por coche
 DELIMITER //
 CREATE FUNCTION CostoMantenimientoPorCoche(p_IdCoche INT)
 RETURNS DECIMAL(10,2)
@@ -754,43 +754,9 @@ DELIMITER ;
 
 -- Llamar
 SELECT CostoMantenimientoPorCoche(1);
+*/
 
--- Obtener el total de coches alquilador por cliente
-DELIMITER //
-CREATE FUNCTION TotalCochesPorCliente(p_Id_Cliente INT) 
-RETURNS INT
-DETERMINISTIC
-BEGIN
-    DECLARE total INT;
-    SELECT COUNT(*) INTO total
-    FROM Detalle_Alquiler
-    WHERE Id_Cliente = p_Id_Cliente;
-    RETURN total;
-END;
-//
-DELIMITER ;
-
-SELECT TotalCochesPorCliente(1);
-
-
--- Verificar si un coche está disponible (estado = 'Disponible')
-DELIMITER //
-CREATE FUNCTION CocheDisponible(p_Id_Coche INT)
-RETURNS BOOLEAN
-DETERMINISTIC
-BEGIN
-    DECLARE disponible BOOLEAN;
-    SELECT Estado = 'Disponible' INTO disponible
-    FROM Coche
-    WHERE Id_Coche = p_Id_Coche;
-    RETURN disponible;
-END;
-//
-DELIMITER ;
-
-SELECT CocheDisponible(3);
-
-
+/*
 -- Calcular el número de mantenimientos realizados a un coche
 DELIMITER //
 CREATE FUNCTION TotalMantenimientosPorCoche(p_Id_Coche INT)
@@ -807,12 +773,9 @@ END;
 DELIMITER ;
 
 SELECT TotalMantenimientosPorCoche(3);
+*/
 
 -- ============================================================================================
-
-
-
-
 
 
 
@@ -833,10 +796,6 @@ SHOW GRANTS FOR "kreivin"@"localhost";
 SHOW GRANTS FOR "maestrogarcia"@"localhost";
 
 
-
-
-
-
 -- ==================================EVENTOS==================================
 -- Evento para actualizar coches que ya terminaron su alquiler
 DELIMITER $$
@@ -848,42 +807,14 @@ BEGIN
     UPDATE Coche c
     JOIN Detalle_Alquiler da ON c.Id_Coche = da.Id_Coche
     JOIN Alquiler a ON da.Id_Alquiler = a.Id_Alquiler
+    JOIN Detalle_Mantenimiento dm ON c.Id_Coche = dm.Id_Coche 
+    JOIN Mantenimiento m ON dm.Id_Mantenimiento = m.Id_Manteniento
+    
     SET c.Estado = 'Disponible'
-    WHERE a.Fecha_Fin < NOW()
-    AND c.Estado = 'En Alquiler';
-END$$
-DELIMITER ;
-
--- Evento para marcar mantenimientos vencidos
-
-DELIMITER $$
-CREATE EVENT marcar_mantenimientos_vencidos
-ON SCHEDULE EVERY 1 DAY
-STARTS CURRENT_TIMESTAMP
-DO
-BEGIN
-    UPDATE Mantenimiento m
-    SET m.Estado = 'Vencido'
-    WHERE m.Fecha_Fin < NOW()
-    AND m.Estado != 'Vencido';
+    WHERE a.Fecha_Fin < NOW() OR m.Fecha_Fin < NOW()
+    AND c.Estado = 'En Alquiler' OR c.Estado = "En Mantenimiento";
 END$$
 DELIMITER ;
 
 SET GLOBAL event_scheduler = ON; #para activar los eventos en MySQL
 SHOW EVENTS; #mostrar todos los eventos creados en MySQL
-
-
-DELIMITER $$
-
-CREATE TRIGGER trg_coche_en_mantenimiento
-AFTER INSERT ON Detalle_Mantenimiento
-FOR EACH ROW
-BEGIN
-    UPDATE Coche
-    SET Estado = 'En Mantenimiento'
-    WHERE Id_Coche = NEW.Id_Coche;
-END$$
-
-DELIMITER ;
-
-SHOW TRIGGERS;

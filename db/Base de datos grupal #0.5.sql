@@ -895,13 +895,140 @@ END;
 
 DELIMITER ;
 
--- ========= actualizar detalles mantenimientos ===========
+-- ===============================PROCEDIMIENTOS PARA ALQUILER=================================== --
+
+-- ===============================PROCEDIMIENTO INSERTAR ALQUILER================================ --
+
+DELIMITER //
+
+CREATE PROCEDURE insert_alquiler(
+IN a_fecha_inicio DATETime,
+IN a_fecha_fin  DATETime
+)
+BEGIN
+INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin)
+VALUES (a_fecha_inicio, a_fecha_fin);
+
+END ;
+//
+DELIMITER ;
+
+-- Ejemplo
+CALL insert_alquiler('2025-07-10 12:00:00', '2025-10-25 12:50:00');
+
+-- ===============================PROCEDIMIENTO ACTUALIZAR ALQUILER================================ --
+
+DELIMITER //
+CREATE PROCEDURE Actualizar_Alquiler(
+    IN p_Id_Alquiler INT,
+    IN p_Fecha_Inicio DATETIME,
+    IN p_Fecha_Fin DATETIME
+)
+BEGIN
+    UPDATE Alquiler
+    SET Fecha_Inicio = p_Fecha_Inicio,
+        Fecha_Fin = p_Fecha_Fin
+    WHERE Id_Alquiler = p_Id_Alquiler;
+END //
+DELIMITER ;
+
+
+
+-- ================ EJEMPLO PARA ACTUALIZAR ALQUILER ================= --
+CALL Actualizar_Alquiler(1, '2025-10-28 08:00:00', '2025-10-31 18:00:00');
+
+
+-- ===============================PROCEDIMIENTO ELIMINAR ALQUILER================================ --
+
+
+DELIMITER //
+
+CREATE PROCEDURE Eliminar_Alquiler(
+    IN p_Id_Alquiler INT
+)
+BEGIN
+    DELETE FROM Alquiler
+    WHERE Id_Alquiler = p_Id_Alquiler;
+END;
+//
+
+DELIMITER ;
+
+-- ======= EJEMPLO PARA ELIMINAR ALQUILER ====== --
+CALL Eliminar_Alquiler(2);
+
+-- ================= DETALLE ALQUILER ===================== --
+
+DELIMITER //
+CREATE PROCEDURE Insertar_Detalle_Alquiler (
+    IN p_Id_Alquiler INT,
+    IN p_Id_Coche INT,
+    IN p_Id_Usuario INT,
+    IN p_Precio_Total DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Coche, Id_Usuario, Precio_Total)
+    VALUES (p_Id_Alquiler, p_Id_Coche, p_Id_Usuario, p_Precio_Total);
+END;
+//
+
+DELIMITER ;
+
+-- ================== EJEMPLO DE INSERTAR ==================== --
+
+CALL Insertar_Detalle_Alquiler(1, 2, 3, 150.00);
+
+
+-- ==========================PROCEDIMIENTO PARA Actualizar_Detalle_Alquiler============================= -- 
+
+DELIMITER //
+CREATE PROCEDURE Actualizar_Detalle_Alquiler (
+    IN p_Id_Detalle_Alquiler INT,
+    IN p_Id_Alquiler INT,
+    IN p_Id_Coche INT,
+    IN p_Id_Usuario INT,
+    IN p_Precio_Total DECIMAL(10,2)
+)
+BEGIN
+    UPDATE Detalle_Alquiler
+    SET Id_Alquiler = p_Id_Alquiler,
+        Id_Coche = p_Id_Coche,
+        Id_Usuario = p_Id_Usuario,
+        Precio_Total = p_Precio_Total
+    WHERE Id_Detalle_Alquiler = p_Id_Detalle_Alquiler;
+END //
+DELIMITER ;
+
+
+-- =========== EJEMPLO DE ACTUALIZAR ================ --
+CALL Actualizar_Detalle_Alquiler(1, 3, 5, 6, 200.75);
+
+
+-- =========== PROCEDIMIENTO PARA ELIMINAR DETALLE ALQUILER ================ --
+
+DELIMITER //
+CREATE PROCEDURE Eliminar_Detalle_Alquiler (
+    IN p_Id_Detalle_Alquiler INT
+)
+BEGIN
+    DELETE FROM Detalle_Alquiler
+    WHERE Id_Detalle_Alquiler = p_Id_Detalle_Alquiler;
+END;
+//
+
+DELIMITER ;
+
+
+-- =========== EJEMPLO DE ELIMINAR ================ --
+CALL Eliminar_Detalle_Alquiler(2);
 
 
 
 -- ==============================FUNSIONES===============================
 /* Obtener costo total de mantenimiento por coche
+
 DELIMITER //
+
 CREATE FUNCTION CostoMantenimientoPorCoche(p_IdCoche INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
@@ -914,6 +1041,7 @@ BEGIN
     RETURN IFNULL(total, 0.00);
 END;
 //
+
 DELIMITER ;
 
 -- Llamar

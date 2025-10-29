@@ -4,17 +4,19 @@ import { obtenerUsuario, obtenerUsuarioPorId, crearUsuario, eliminarUsuario, act
 const router = Router();
 
 // Rutas
-router.get('/Usuarios', obtenerUsuario);
-export default router;
+router.get('/usuarios', obtenerUsuario);
+
 
 //rutas usuario por id
-router.get('/Usuario/:Id_Usuario', obtenerUsuarioPorId);
+router.get('/usuarios/:Id_Usuario', obtenerUsuarioPorId);
 
 //rutas para registrar un nuevo usuario
-router.post('/Usuario', crearUsuario);
+router.post('/registrarusuarios', crearUsuario);
 
 //rutas para actualizar un usuario
-router.patch('/Usuario/:Id_Usuario', actualizarUsuario);
+router.patch('/usuarios/:Id_Usuario', actualizarUsuario);
 
 //rutas para eliminar un usuario
-router.delete('/Usuario/:Id_Usuario', eliminarUsuario);
+router.delete('/usuarios/:Id_Usuario', eliminarUsuario);
+
+export default router;

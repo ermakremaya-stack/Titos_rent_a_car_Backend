@@ -39,11 +39,13 @@ CREATE TABLE Coche (
     Anio INT NOT NULL,
     Placa VARCHAR (10) NOT NULL UNIQUE,
     Color VARCHAR (50),
-    Fecha_Registro DATE NOT NULL,
+    Fecha_Registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     Estado ENUM("En Alquiler", "En Mantenimiento", "Disponible") DEFAULT ('Disponible')
 );
+
 SHOW CREATE TABLE Coche;
 -- Tabla Alquiler
+
 CREATE TABLE Alquiler (
     Id_Alquiler INT PRIMARY KEY AUTO_INCREMENT,
     Fecha_Inicio DATETime NOT NULL,
@@ -409,26 +411,27 @@ INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direc
 
 
 -- Insertar datos en la tabla Coche
-INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro, Estado) VALUES
-('Toyota', 'Corolla', 2022, 'ABC123', 'Rojo', '2024-01-15', 'Disponible'),
-('Honda', 'Civic', 2021, 'XYZ789', 'Azul', '2024-01-20', 'Disponible'),
-('Ford', 'Focus', 2023, 'DEF456', 'Negro', '2024-01-25', 'Disponible'),
-('Chevrolet', 'Cruze', 2020, 'GHI789', 'Blanco', '2024-02-01', 'En Mantenimiento'),
-('Nissan', 'Sentra', 2022, 'JKL012', 'Plata', '2024-02-05', 'Disponible'),
-('Mazda', '3', 2021, 'MNO345', 'Verde', '2024-02-10', 'Disponible'),
-('Kia', 'Forte', 2020, 'PQR678', 'Gris', '2024-02-12', 'En Mantenimiento'),
-('Hyundai', 'Elantra', 2022, 'STU901', 'Rojo', '2024-02-15', 'Disponible'),
-('BMW', '320i', 2021, 'VWX234', 'Azul', '2024-02-18', 'En Alquiler'),
-('Audi', 'A4', 2023, 'YZA567', 'Negro', '2024-02-20', 'Disponible'),
-('Mercedes-Benz', 'C-Class', 2020, 'BCD890', 'Blanco', '2024-02-22', 'En Alquiler'),
-('Volkswagen', 'Golf', 2022, 'EFG123', 'Plata', '2024-02-25', 'Disponible'),
-('Porsche', 'Cayenne', 2023, 'HIJ456', 'Amarillo', '2024-03-01', 'En Mantenimiento'),
-('Toyota', 'Yaris', 2021, 'KLM789', 'Rojo', '2024-03-05', 'Disponible'),
-('Honda', 'HR-V', 2022, 'NOP012', 'Verde', '2024-03-08', 'En Alquiler'),
-('Chevrolet', 'Equinox', 2020, 'QRS345', 'Azul', '2024-03-10', 'Disponible'),
-('Nissan', 'Altima', 2023, 'TUV678', 'Gris', '2024-03-12', 'Disponible'),
-('Mazda', 'CX-5', 2022, 'WXY901', 'Blanco', '2024-03-15', 'En Alquiler'),
-('Kia', 'Sportage', 2021, 'ZAB234', 'Negro', '2024-03-18', 'Disponible');
+INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color) VALUES
+('Toyota', 'Corolla', 2022, 'ABC123', 'Rojo'),
+('Honda', 'Civic', 2021, 'XYZ789', 'Azul'),
+('Ford', 'Focus', 2023, 'DEF456', 'Negro'),
+('Chevrolet', 'Cruze', 2020, 'GHI789', 'Blanco'),
+('Nissan', 'Sentra', 2022, 'JKL012', 'Plata'),
+('Mazda', '3', 2021, 'MNO345', 'Verde'),
+('Kia', 'Forte', 2020, 'PQR678', 'Gris'),
+('Hyundai', 'Elantra', 2022, 'STU901', 'Rojo'),
+('BMW', '320i', 2021, 'VWX234', 'Azul'),
+('Audi', 'A4', 2023, 'YZA567', 'Negro'),
+('Mercedes-Benz', 'C-Class', 2020, 'BCD890', 'Blanco'),
+('Volkswagen', 'Golf', 2022, 'EFG123', 'Plata'),
+('Porsche', 'Cayenne', 2023, 'HIJ456', 'Amarillo'),
+('Toyota', 'Yaris', 2021, 'KLM789', 'Rojo'),
+('Honda', 'HR-V', 2022, 'NOP012', 'Verde'),
+('Chevrolet', 'Equinox', 2020, 'QRS345', 'Azul'),
+('Nissan', 'Altima', 2023, 'TUV678', 'Gris'),
+('Mazda', 'CX-5', 2022, 'WXY901', 'Blanco'),
+('Kia', 'Sportage', 2021, 'ZAB234', 'Negro');
+
 
 
 -- Insertar datos en la tabla Alquiler
@@ -595,20 +598,19 @@ CALL EliminarEmpleado(1);
 DELIMITER //
 CREATE PROCEDURE InsertarCoche (
     IN p_Marca VARCHAR(50),
-    IN p_Modelo VARCHAR(50),
+    IN p_Modelo VARCHAR(20),
     IN p_Anio INT,
     IN p_Placa VARCHAR(10),
-    IN p_Color VARCHAR(20),
-    IN p_Fecha_Registro VARCHAR (10)
+    IN p_Color VARCHAR(20)
 )
 BEGIN
-    INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro)
-    VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color, p_Fecha_Registro);
+    INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color)
+    VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color);
 END //
 DELIMITER ;
 
 -- Ejemplo
-CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12348', 'Rojo', '2024-01-15');
+CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12348', 'Rojo');
 
 
 

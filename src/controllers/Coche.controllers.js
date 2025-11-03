@@ -35,10 +35,10 @@ export const obtenerCoche = async (req, res) => {
 // Registrar un nuevo coche
 export const registrarCoche = async (req, res) => {
   try {
-    const { marca, modelo, anio, placa, color, fecha_registro } = req.body;
+    const { marca, modelo, anio, placa, color} = req.body;
     await pool.query(
-      'CALL InsertarCoche (?, ?, ?, ?, ?, ?); ',
-      [marca, modelo, anio, placa, color, fecha_registro],
+      'CALL InsertarCoche (?, ?, ?, ?, ?); ',
+      [marca, modelo, anio, placa, color],
     );
     res.status(201).json({ mensaje: 'Coche registrado exitosamente.' });
   } catch (error) {

@@ -599,7 +599,7 @@ CREATE PROCEDURE InsertarCoche (
     IN p_Anio INT,
     IN p_Placa VARCHAR(10),
     IN p_Color VARCHAR(20),
-    IN p_Fecha_Registro DATETIME
+    IN p_Fecha_Registro VARCHAR (10)
 )
 BEGIN
     INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro)

@@ -42,7 +42,7 @@ CREATE TABLE Coche (
     Fecha_Registro DATE NOT NULL,
     Estado ENUM("En Alquiler", "En Mantenimiento", "Disponible") DEFAULT ('Disponible')
 );
-
+SHOW CREATE TABLE Coche;
 -- Tabla Alquiler
 CREATE TABLE Alquiler (
     Id_Alquiler INT PRIMARY KEY AUTO_INCREMENT,
@@ -335,6 +335,46 @@ END $$
 
 DELIMITER ;
 
+-- ########################-Revisar si exiaten placas duplicadas-##########
+DELIMITER $$
+CREATE TRIGGER trg_evitar_placa_duplicada
+BEFORE INSERT ON Coche
+FOR EACH ROW
+BEGIN
+ DECLARE existe INT;
+ 
+ SELECT COUNT(*) INTO existe
+ FROM Coche
+-- Aplicamos condicion para evitar valores duplicados
+ WHERE Placa = NEW.Placa;
+ 
+ IF existe > 0 THEN
+	SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Error: La placa ya esta registrada en el sistema.';
+    
+END IF;
+END $$
+DELIMITER ;
+
+
+DELIMITER $$
+CREATE TRIGGER trg_evitar_placa_duplicada_update
+BEFORE UPDATE ON Coche
+FOR EACH ROW
+BEGIN
+  DECLARE Existe INT;
+
+  SELECT COUNT(*) INTO existe
+  FROM Coche
+  -- Aplicamos condicion para evitar valores duplicados
+  WHERE trg_evitar_placa_duplicadaPlaca = NEW.Placa AND Id_Coche <> OLD.Id_Coche;
+
+  IF Existe > 0 THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'Error: La placa ya está registrada en otro coche.';
+  END IF;
+END $$
+DELIMITER ;
 
 -- ============================================================================
 
@@ -559,18 +599,16 @@ CREATE PROCEDURE InsertarCoche (
     IN p_Anio INT,
     IN p_Placa VARCHAR(10),
     IN p_Color VARCHAR(20),
-    IN p_Fecha_Registro DATETIME,
-    IN p_Estado VARCHAR(50)
+    IN p_Fecha_Registro DATETIME
 )
 BEGIN
-    INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro, Estado)
-    VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color, p_Fecha_Registro, p_Estado);
-    SELECT LAST_INSERT_ID() AS Id_Coche;
+    INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Fecha_Registro)
+    VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color, p_Fecha_Registro);
 END //
 DELIMITER ;
 
 -- Ejemplo
-CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12346', 'Rojo', '2024-01-15', 'Disponible');
+CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12348', 'Rojo', '2024-01-15');
 
 
 

@@ -396,10 +396,13 @@ END //
 
 DELIMITER ;
 
+CALL ActualizarCoche(1, 'Toyota', 'Corolla', 2020, '11112', 'Rojo', '2023-10-22', 'En Alquiler');
+
+Select * from coche;
 
 -- CORREGIR LA TABLA DE COCHE Y QUITAR EL DATETIME Y PONER SOLO DATE
 
-
+drop trigger trg_evitar_placa_duplicada_update;
 
 DELIMITER //
 
@@ -1109,7 +1112,7 @@ CALL EliminarEmpleado(1);
 -- Ejemplo
 CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12348', 'Rojo');
 
-CALL ActualizarCoche(1, 'Toyota', 'Corolla', 2020, '452', 'Rojo', '2023-10-22', 'En Alquiler');
+
 
 CALL EliminarCoche('1');
 
@@ -1143,6 +1146,7 @@ CALL Actualizar_Alquiler(1, '2025-10-28 08:00:00', '2025-10-31 18:00:00');
 -- ======= EJEMPLO PARA ELIMINAR ALQUILER ====== --
 CALL Eliminar_Alquiler(2);
 
+*/
 -- ================== EJEMPLO DE INSERTAR ==================== --
 CALL Insertar_Detalle_Alquiler(1, 2, 3, 150.00);
 
@@ -1151,4 +1155,3 @@ CALL Actualizar_Detalle_Alquiler(1, 3, 5, 6, 200.75);
 
 -- =========== EJEMPLO DE ELIMINAR ================ --
 CALL Eliminar_Detalle_Alquiler(2);
-*/

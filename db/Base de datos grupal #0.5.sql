@@ -1108,16 +1108,15 @@ CALL ActualizarEmpleado( '1' ,'Administrador', "121-098487-100C", 'Carlos', 'And
 -- Ejemplo de uso:
 CALL EliminarEmpleado(1);
 
-*/
+
 
 -- Ejemplo
 CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12348', 'Rojo');
 
 
-
 CALL EliminarCoche('1');
 
-/*
+
 CALL InsertarUsuario(
     '099-999999-0009Z', 'Carlos', 'Eduardo', 'Mora', 'Jimenez',
     '88889999', 'San José', 'carlos.mora@email.com', 'LIC-Z9', 'claveSegura'
@@ -1147,7 +1146,7 @@ CALL Actualizar_Alquiler(1, '2025-10-28 08:00:00', '2025-10-31 18:00:00');
 -- ======= EJEMPLO PARA ELIMINAR ALQUILER ====== --
 CALL Eliminar_Alquiler(2);
 
-*/
+
 -- ================== EJEMPLO DE INSERTAR ==================== --
 CALL Insertar_Detalle_Alquiler(1, 2, 3, 150.00);
 
@@ -1156,3 +1155,4 @@ CALL Actualizar_Detalle_Alquiler(1, 3, 5, 6, 200.75);
 
 -- =========== EJEMPLO DE ELIMINAR ================ --
 CALL Eliminar_Detalle_Alquiler(2);
+*/

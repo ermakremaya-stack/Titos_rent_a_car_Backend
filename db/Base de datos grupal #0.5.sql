@@ -396,6 +396,7 @@ END //
 
 DELIMITER ;
 
+/*
 CALL ActualizarCoche(1, 'Toyota', 'Corolla', 2020, '11112', 'Rojo', '2023-10-22', 'En Alquiler');
 
 Select * from coche;
@@ -403,7 +404,7 @@ Select * from coche;
 -- CORREGIR LA TABLA DE COCHE Y QUITAR EL DATETIME Y PONER SOLO DATE
 
 drop trigger trg_evitar_placa_duplicada_update;
-
+*/
 DELIMITER //
 
 CREATE PROCEDURE EliminarCoche (
@@ -1038,7 +1039,7 @@ BEGIN
   SELECT COUNT(*) INTO existe
   FROM Coche
   -- Aplicamos condicion para evitar valores duplicados
-  WHERE trg_evitar_placa_duplicadaPlaca = NEW.Placa AND Coche.Id_Coche <> OLD.Id_Coche;
+  WHERE Placa = NEW.Placa AND Coche.Id_Coche <> OLD.Id_Coche;
 
   IF Existe > 0 THEN
     SIGNAL SQLSTATE '45000'

@@ -2,7 +2,7 @@ import { pool } from '../../db_connection.js';
 
 // Obtener todas las Mantenimiento
 
-export const obtenerMantenimiento = async (req, res) => {
+export const obtenerMantenimientos = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Mantenimiento');
         res.json(result);
@@ -16,13 +16,13 @@ export const obtenerMantenimiento = async (req, res) => {
 
 
 // Obtener una mantenimiento por su ID
-export const obtenerMantenimientos = async (req, res) => {
+export const obtenerMantenimiento = async (req, res) => {
 try {
-    const id_Mantenimiento = req.params.id_Mantenimiento;
-const [result] = await pool.query('SELECT * FROM Mantenimiento WHERE id_Mantenimiento = ?', [id_Mantenimiento]);
+    const Id_Mantenimiento = req.params.Id_Mantenimiento;
+const [result] = await pool.query('SELECT * FROM Mantenimiento WHERE id_Mantenimiento = ?', [Id_Mantenimiento]);
 if (result.length <= 0) {
 return res.status(404).json({
-mensaje: `Error al leer los datos. ID ${id_Mantenimiento} no encontrado.`
+mensaje: `Error al leer los datos. ID ${Id_Mantenimiento} no encontrado.`
 });
 }
 res.json(result[0]);
@@ -33,18 +33,19 @@ mensaje: 'Ha ocurrido un error al leer los datos de los Mantenimiento.'
 }
 };
 
+
 // Registrar un nueva Mantenimiento
 export const registrarMantenimiento = async (req, res) => {
 try {
-const {  Descripcion,Justificacion,Fecha_Inicio,Fecha_Fin,Costo } = req.body;
+const {  Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, Costo } = req.body;
 const [result] = await pool.query(
-'INSERT INTO Mantenimiento ( Descripcion,Justificacion,Fecha_Inicio,Fecha_Fin,Costo) VALUES (?, ?,?,?,?)',
-[ Descripcion,Justificacion,Fecha_Inicio,Fecha_Fin,Costo]
+'INSERT INTO Mantenimiento ( Descripcion,Justificacion,Fecha_Inicio,Fecha_Fin,Costo) VALUES (?,?,?,?,?)',
+[ Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, Costo]
 );
-res.status(201).json({ id_Mantenimiento: result.insertId });
+res.status(201).json({ Id_Mantenimiento: result.insertId });
 } catch (error) {
 return res.status(500).json({
-mensaje: 'Ha ocurrido un error al registrar las Mantenimiento.',
+mensaje: 'Ha ocurrido un error al registrar los Mantenimiento.',
 error: error
 });
 }
@@ -53,12 +54,12 @@ error: error
 // Eliminar Mantenimiento por id 
 export const eliminarMantenimiento = async (req, res)=> {
     try{
-        const id_Mantenimiento = req.params.id_Mantenimiento;
-        const [result] = await pool.query('DELETE FROM Mantenimiento WHERE id_Mantenimiento = ?',[id_Mantenimiento]);
+        const Id_Mantenimiento = req.params.Id_Mantenimiento;
+        const [result] = await pool.query('DELETE FROM Mantenimiento WHERE Id_Mantenimiento = ?',[Id_Mantenimiento]);
 
         if (result.affectedRows === 0 ){
             return res.status(404).json({
-            mensaje: `Error al eliminar la Mantenimiento. el ID ${id_Mantenimiento} no fue encontrado.`
+            mensaje: `Error al eliminar la Mantenimiento. el ID ${Id_Mantenimiento} no fue encontrado.`
         });
     }
 
@@ -76,20 +77,20 @@ res.status(204).send();
 // controlador para actualizar parcialmente una Matenimiento por su ID
 export const actualizarMantenimiento = async (req, res) => {
     try {
-        const {id_Mantenimiento} = req.params;
+        const {Id_Mantenimiento} = req.params;
         const datos = req.body;
 
         const [result] = await pool.query(
-            'UPDATE Mantenimiento SET ? WHERE id_Mantenimiento = ?',
-            [datos, id_Mantenimiento]
+            'UPDATE Mantenimiento SET ? WHERE Id_Mantenimiento = ?',
+            [datos, Id_Mantenimiento]
         );
         if (result.affectedRows === 0){
             return res.status(404).json({
-                mensaje: `Mantenimiento con ID ${id_Mantenimiento} no encotrado.`
+                mensaje: `Mantenimiento con ID ${Id_Mantenimiento} no encotrado.`
             });
         }
         res.status(200).json({
-            mensaje: `Mantenimiento con ID ${id_Mantenimiento} actualizada exitosamente.`
+            mensaje: `Mantenimiento con ID ${Id_Mantenimiento} actualizada exitosamente.`
         });
     } catch (error) {
         return res.status(500).json({

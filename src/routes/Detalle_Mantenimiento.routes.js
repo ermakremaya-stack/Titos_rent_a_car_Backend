@@ -4,9 +4,9 @@ import { obtenerDetalle_Mantenimiento, obtenerDetalle_Mantenimientos, registrarD
 const router = Router();
 
 // Rutas
-router.get('/Detalle_Mantenimiento', obtenerDetalle_Mantenimiento);
+router.get('/Detalle_Mantenimiento', obtenerDetalle_Mantenimientos);
 
-router.get('/Detalle_Mantenimiento/:Id_Detalle_Mantenimiento', obtenerDetalle_Mantenimientos);
+router.get('/Detalle_Mantenimiento/:Id_Detalle_Mantenimiento', obtenerDetalle_Mantenimiento);
 
 router.delete('/eliminarDetalle_Mantenimiento/:Id_Detalle_Mantenimiento', eliminarDetalle_Mantenimiento);
 

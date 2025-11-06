@@ -1,21 +1,21 @@
+// routes/empleado.routes.js (o donde esté)
 import { Router } from 'express';
-import { obtenerEmpleados, obtenerEmpleado, registrarEmpleado, eliminarEmpleado, actualizarEmpleado } from '../controllers/Empleado.controllers.js';
+import { 
+  obtenerEmpleados, 
+  obtenerEmpleado, 
+  registrarEmpleado, 
+  eliminarEmpleado, 
+  actualizarEmpleado 
+} from '../controllers/Empleado.controllers.js';
 
 const router = Router();
 
-// Rutas
-router.get('/Empleados', obtenerEmpleados);
-
-// Ruta para obtener un cliente por su ID
-router.get('/Empleado/:Id_Empleado', obtenerEmpleado);
-
-// Ruta para registrar una nueva Categoría
+// CORRECTO: Usa /Empleado (singular) o /empleados (plural minúscula)
+// Recomendado: /empleados (RESTful)
+router.get('/empleados', obtenerEmpleados);           // ← Cambiado
+router.get('/empleados/:Id_Empleado', obtenerEmpleado);
 router.post('/registrarEmpleado', registrarEmpleado);
-
-// Ruta para eliminar un empleado por su ID
-router.delete('/eliminarEmpleado/:Id_Empleado', eliminarEmpleado);
-
-// Ruta para actualizar un empleado por su ID
-router.patch('/actualizarempleado/:Id_Empleado', actualizarEmpleado);
+router.delete('/empleados/:Id_Empleado', eliminarEmpleado);     // ← Cambiado
+router.patch('/empleados/:Id_Empleado', actualizarEmpleado);   // ← Cambiado
 
 export default router;

@@ -29,6 +29,7 @@ CREATE TABLE Empleado (
     Apellido2 VARCHAR(50),
     Direccion VARCHAR(150) NOT NULL,
     Email VARCHAR(150) UNIQUE,
+    Fecha_Contratacion DATE NOT NULL DEFAULT (CURRENT_DATE()),
     Contrasena VARCHAR (20) NOT NULL
 );
 
@@ -40,7 +41,7 @@ CREATE TABLE Coche (
     Anio INT NOT NULL,
     Placa VARCHAR (10) NOT NULL UNIQUE,
     Color VARCHAR (50),
-    Fecha_Registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    Fecha_Registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),  
 	Estado ENUM('En Alquiler', 'En Mantenimiento', 'Disponible') DEFAULT 'Disponible'
 );
 
@@ -1105,7 +1106,7 @@ CALL ActualizarEmpleado( '1' ,'Administrador', "121-098487-100C", 'Carlos', 'And
 CALL EliminarEmpleado(1);
 
 
-*/
+
 -- Ejemplo
 CALL InsertarCoche('Toyota', 'Etios', 2020, 'M12348', 'Rojo');
 
@@ -1113,7 +1114,7 @@ CALL ActualizarCoche(21, "Toyota", "Etios", 2011, "DJS1254", "Rojo");
 
 CALL EliminarCoche('1');
 
-/*
+
 
 CALL InsertarUsuario(
     '099-999999-0009Z', 'Carlos', 'Eduardo', 'Mora', 'Jimenez',

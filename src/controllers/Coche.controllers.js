@@ -75,11 +75,11 @@ export const eliminarCoche = async (req, res) => {
 export const actualizarCoche = async (req, res) => {
   try {
     const Id_Coche = req.params.Id_Coche;
-    const { marca, modelo, anio, placa, color, fecha_registro, estado } = req.body;
+    const { marca, modelo, anio, placa, color } = req.body;
 
     const [result] = await pool.query(
-      'CALL ActualizarCoche (?, ?, ?, ?, ?, ?, ?, ?);',
-      [Id_Coche, marca, modelo, anio, placa, color, fecha_registro, estado]
+      'CALL ActualizarCoche (?, ?, ?, ?, ?, ?);',
+      [Id_Coche, marca, modelo, anio, placa, color]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({

@@ -377,9 +377,7 @@ CREATE PROCEDURE ActualizarCoche(
     IN p_Modelo VARCHAR (50),
     IN p_Anio INT,
 	IN p_Placa VARCHAR (10),
-    IN p_Color VARCHAR (20),
-    IN p_Fecha_Registro DATETIME,
-    IN p_Estado ENUM('En Alquiler', 'En Mantenimiento', 'Disponible')
+    IN p_Color VARCHAR (20)
 )
 BEGIN
 UPDATE Coche
@@ -388,9 +386,7 @@ UPDATE Coche
     Modelo = p_Modelo,
     Anio = p_Anio,
     Placa = p_Placa,
-    Color = p_Color,
-    Fecha_Registro = p_Fecha_Registro,
-    Estado = p_Estado
+    Color = p_Color
     WHERE Id_Coche = p_Id_Coche;
 END //
 
@@ -1109,13 +1105,15 @@ CALL ActualizarEmpleado( '1' ,'Administrador', "121-098487-100C", 'Carlos', 'And
 CALL EliminarEmpleado(1);
 
 
-
+*/
 -- Ejemplo
-CALL InsertarCoche('Toyota', 'Yaris', 2020, 'M12348', 'Rojo');
+CALL InsertarCoche('Toyota', 'Etios', 2020, 'M12348', 'Rojo');
 
+CALL ActualizarCoche(21, "Toyota", "Etios", 2011, "DJS1254", "Rojo");
 
 CALL EliminarCoche('1');
 
+/*
 
 CALL InsertarUsuario(
     '099-999999-0009Z', 'Carlos', 'Eduardo', 'Mora', 'Jimenez',

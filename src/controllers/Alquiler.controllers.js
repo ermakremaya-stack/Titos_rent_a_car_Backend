@@ -75,7 +75,7 @@ export const actualizarAlquiler = async (req, res) => {
         const { fecha_inicio, fecha_fin } = req.body;
 
         const [result] = await pool.query(
-            'UPDATE Alquiler SET Fecha_Inicio = ?, Fecha_Fin = ? WHERE Id_Alquiler = ?',
+            'Call ',
             [fecha_inicio, fecha_fin, Id_Alquiler]
         );
         if (result.affectedRows === 0) {

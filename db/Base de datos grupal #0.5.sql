@@ -127,25 +127,25 @@ INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direc
 
 
 INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color) VALUES
-('Toyota', 'Corolla', 2022, 'ABC123', 'Rojo'),
-('Honda', 'Civic', 2021, 'XYZ789', 'Azul'),
-('Ford', 'Focus', 2023, 'DEF456', 'Negro'),
-('Chevrolet', 'Cruze', 2020, 'GHI789', 'Blanco'),
-('Nissan', 'Sentra', 2022, 'JKL012', 'Plata'),
-('Mazda', '3', 2021, 'MNO345', 'Verde'),
-('Kia', 'Forte', 2020, 'PQR678', 'Gris'),
-('Hyundai', 'Elantra', 2022, 'STU901', 'Rojo'),
-('BMW', '320i', 2021, 'VWX234', 'Azul'),
-('Audi', 'A4', 2023, 'YZA567', 'Negro'),
-('Mercedes-Benz', 'C-Class', 2020, 'BCD890', 'Blanco'),
-('Volkswagen', 'Golf', 2022, 'EFG123', 'Plata'),
-('Porsche', 'Cayenne', 2023, 'HIJ456', 'Amarillo'),
-('Toyota', 'Yaris', 2021, 'KLM789', 'Rojo'),
-('Honda', 'HR-V', 2022, 'NOP012', 'Verde'),
-('Chevrolet', 'Equinox', 2020, 'QRS345', 'Azul'),
-('Nissan', 'Altima', 2023, 'TUV678', 'Gris'),
-('Mazda', 'CX-5', 2022, 'WXY901', 'Blanco'),
-('Kia', 'Sportage', 2021, 'ZAB234', 'Negro');
+('Toyota', 'Corolla', 2022, 'ABC123', '#FF0000'),      
+('Honda', 'Civic', 2021, 'XYZ789', '#0000FF'),         
+('Ford', 'Focus', 2023, 'DEF456', '#000000'),          
+('Chevrolet', 'Cruze', 2020, 'GHI789', '#FFFFFF'),     
+('Nissan', 'Sentra', 2022, 'JKL012', '#C0C0C0'),       
+('Mazda', '3', 2021, 'MNO345', '#008000'),             
+('Kia', 'Forte', 2020, 'PQR678', '#808080'),           
+('Hyundai', 'Elantra', 2022, 'STU901', '#FF0000'),     
+('BMW', '320i', 2021, 'VWX234', '#0000FF'),            
+('Audi', 'A4', 2023, 'YZA567', '#000000'),             
+('Mercedes-Benz', 'C-Class', 2020, 'BCD890', '#FFFFFF'),
+('Volkswagen', 'Golf', 2022, 'EFG123', '#C0C0C0'),     
+('Porsche', 'Cayenne', 2023, 'HIJ456', '#FFFF00'),     
+('Toyota', 'Yaris', 2021, 'KLM789', '#FF0000'),        
+('Honda', 'HR-V', 2022, 'NOP012', '#008000'),          
+('Chevrolet', 'Equinox', 2020, 'QRS345', '#0000FF'),   
+('Nissan', 'Altima', 2023, 'TUV678', '#808080'),       
+('Mazda', 'CX-5', 2022, 'WXY901', '#FFFFFF'),         
+('Kia', 'Sportage', 2021, 'ZAB234', '#000000');        
 
 
 INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES

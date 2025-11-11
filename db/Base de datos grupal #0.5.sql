@@ -954,9 +954,16 @@ SHOW EVENTS; #mostrar todos los eventos creados en MySQL
 
 
 -- ===========================CREAR USUARIOS=================================================================
+DROP ROLE IF EXISTS "Usuario";
 CREATE ROLE "Usuario";
+
+DROP ROLE IF EXISTS "Administrador";
 CREATE ROLE "Administrador";
+
+DROP ROLE IF EXISTS "Mecánico";
 CREATE ROLE "Mecánico";
+
+DROP ROLE IF EXISTS "Agente de alquiler";
 CREATE ROLE "Agente de alquiler";
 
 GRANT SELECT, INSERT ON Alquiler TO "Usuario";
@@ -970,8 +977,12 @@ GRANT SELECT, INSERT, UPDATE ON Detalle_Mantenimiento TO "Mecánico";
 GRANT SELECT, INSERT, UPDATE ON Alquiler TO "Agente de alquiler";
 GRANT SELECT, INSERT, UPDATE ON Detalle_Alquiler TO "Agente de alquiler";
 
-
-
+/*  comnados para corrovorar la existencia de roles
+SELECT user, host 
+FROM mysql.user 
+WHERE account_locked = 'Y'  -- Roles están bloqueados (no pueden loguearse)
+  AND user IN ('Usuario', 'Administrador', 'Mecánico', 'Agente de alquiler');
+  */
 -- ##################################-Pruebas de ejecucion-#######################
 
 

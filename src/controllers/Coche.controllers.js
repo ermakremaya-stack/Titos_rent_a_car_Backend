@@ -14,6 +14,7 @@ export const obtenerCoches = async (req, res) => {
   }
 };
 
+//#######################################################################################
 // Obtener un coche por su ID
 export const obtenerCoche = async (req, res) => {
   try {
@@ -30,24 +31,33 @@ export const obtenerCoche = async (req, res) => {
     });
   }
 };
-
+// #############################################################################################
 
 // Registrar un nuevo coche
 export const registrarCoche = async (req, res) => {
   try {
-    const { marca, modelo, anio, placa, color} = req.body;
+    const { marca, modelo, anio, placa, color } = req.body;
     await pool.query(
       'CALL InsertarCoche (?, ?, ?, ?, ?); ',
       [marca, modelo, anio, placa, color],
     );
     res.status(201).json({ mensaje: 'Coche registrado exitosamente.' });
   } catch (error) {
+    console.error("Error al registrar coche: ", error);
+
+    // Si el trigger envió el mensaje, estará en error.sqlMessage
+    if (error.sqlMessage) {
+      return res.status(400).json({ error: error.sqlMessage });
+    }
+
     return res.status(500).json({
-      mensaje: 'Ha ocurrido un error al registrar el coche.',
+      mensaje: 'Ha ocurrido un error interno en la base de datos al registrar el coche.',
       error: error
     });
   }
 };
+
+//#################################################################################################
 
 
 // Eliminar un coche por su ID
@@ -62,7 +72,7 @@ export const eliminarCoche = async (req, res) => {
     }
     //Respuesta exitosa
     res.status(200).json({ mensaje: `Coche con ID ${req.params.Id_Coche} eliminado exitosamente.` });
-    
+
   } catch (error) {
     return res.status(500).json({
       mensaje: 'Ha ocurrido un error al eliminar el coche.',
@@ -71,6 +81,8 @@ export const eliminarCoche = async (req, res) => {
   }
 };
 
+
+// ############################################################################################
 // Actualizar un coche por su ID
 export const actualizarCoche = async (req, res) => {
   try {
@@ -90,6 +102,14 @@ export const actualizarCoche = async (req, res) => {
       mensaje: `Coche con ID ${Id_Coche} actualizado exitosamente.`
     });
   } catch (error) {
+
+    console.error("Error al editar coche: ", error);
+
+    // Si el trigger envió el mensaje, estará en error.sqlMessage
+    if (error.sqlMessage) {
+      return res.status(400).json({ error: error.sqlMessage });
+    }
+
     return res.status(500).json({
       mensaje: "Ha ocurrido un error al actualizar el coche.",
       error: error

@@ -41,7 +41,8 @@ CREATE TABLE Coche (
     Anio INT NOT NULL,
     Placa VARCHAR (10) NOT NULL UNIQUE,
     Color VARCHAR (50),
-    Fecha_Registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),  
+    Fecha_Registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    Valor_Dia DECIMAL (10,2),
 	Estado ENUM('En Alquiler', 'En Mantenimiento', 'Disponible') DEFAULT 'Disponible'
 );
 
@@ -234,14 +235,17 @@ CREATE PROCEDURE InsertarCoche (
     IN p_Modelo VARCHAR(20),
     IN p_Anio INT,
     IN p_Placa VARCHAR(10),
-    IN p_Color VARCHAR(20)
+    IN p_Color VARCHAR(50),
+    IN p_Valor_Dia DECIMAL(10,2)
 )
 BEGIN
-    INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color)
-    VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color);
+    INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Valor_Dia)
+    VALUES (p_Marca, p_Modelo, p_Anio, p_Placa, p_Color, p_Valor_Dia);
 END //
 
 DELIMITER ;
+
+
 
 
 DELIMITER //
@@ -249,30 +253,28 @@ DELIMITER //
 CREATE PROCEDURE ActualizarCoche(
 	IN p_Id_Coche INT, 
 	IN p_Marca VARCHAR (50),
-    IN p_Modelo VARCHAR (50),
+    IN p_Modelo VARCHAR (20),
     IN p_Anio INT,
 	IN p_Placa VARCHAR (10),
-    IN p_Color VARCHAR (20)
+    IN p_Color VARCHAR (50),
+    IN p_Valor_Dia DECIMAL(10,2)
 )
 BEGIN
-UPDATE Coche
-	SET 
-    Marca = p_Marca,
-    Modelo = p_Modelo,
-    Anio = p_Anio,
-    Placa = p_Placa,
-    Color = p_Color
+    UPDATE Coche
+    SET 
+        Marca = p_Marca,
+        Modelo = p_Modelo,
+        Anio = p_Anio,
+        Placa = p_Placa,
+        Color = p_Color,
+        Valor_Dia = p_Valor_Dia
     WHERE Id_Coche = p_Id_Coche;
 END //
 
 DELIMITER ;
 
+
 /*
-CALL ActualizarCoche(1, 'Toyota', 'Corolla', 2020, '11112', 'Rojo', '2023-10-22', 'En Alquiler');
-
-Select * from coche;
-
--- CORREGIR LA TABLA DE COCHE Y QUITAR EL DATETIME Y PONER SOLO DATE
 
 drop trigger trg_evitar_placa_duplicada_update;
 */
@@ -950,24 +952,23 @@ SET GLOBAL event_scheduler = ON; #para activar los eventos en MySQL
 SHOW EVENTS; #mostrar todos los eventos creados en MySQL
 
 
-/*
+
 -- ===========================CREAR USUARIOS=================================================================
-CREATE USER IF NOT EXISTS "ernesto"@"localhost" IDENTIFIED BY "123456";
-CREATE USER IF NOT EXISTS "kreivin"@"localhost" IDENTIFIED BY "242526";
-CREATE USER IF NOT EXISTS "maestrogarcia"@"localhost" IDENTIFIED BY "master15";
+CREATE ROLE "Usuario";
+CREATE ROLE "Administrador";
+CREATE ROLE "Mecánico";
+CREATE ROLE "Agente de alquiler";
 
--- Administrador
-GRANT ALL PRIVILEGES ON BD_rentacar_G3.Cliente TO "ernesto"@"localhost";
--- Editor
-GRANT INSERT, UPDATE ON BD_rentacar_G3. Empleado TO "kreivin"@"localhost";
--- lector
-GRANT SELECT ON BD_rentacar_G3. Alquiler TO "maestrogarcia"@"localhost";
+GRANT SELECT, INSERT ON Alquiler TO "Usuario";
+GRANT SELECT, INSERT ON Detalle_Alquiler TO "Usuario";
 
-SHOW GRANTS FOR "ernesto"@"localhost";
-SHOW GRANTS FOR "kreivin"@"localhost";
-SHOW GRANTS FOR "maestrogarcia"@"localhost";
-*/
+GRANT ALL PRIVILEGES ON *.* TO "Administrador";
 
+GRANT SELECT, INSERT, UPDATE ON Mantenimiento TO "Mecánico";
+GRANT SELECT, INSERT, UPDATE ON Detalle_Mantenimiento TO "Mecánico";
+
+GRANT SELECT, INSERT, UPDATE ON Alquiler TO "Agente de alquiler";
+GRANT SELECT, INSERT, UPDATE ON Detalle_Alquiler TO "Agente de alquiler";
 
 -- ##################################-Pruebas de ejecucion-#######################
 
@@ -999,27 +1000,28 @@ INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direc
 ('Mecánico', '020-202020-0000T', 'Antonio', 'Carlos', 'Gonzalez', 'Vazquez', 'Calle del Bosque 654', 'antonio.gonzalez@email.com', 'antonio123');
 
 
-INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color) VALUES
-('Toyota', 'Corolla', 2022, 'ABC123', '#FF0000'),
-('Toyota', 'Corolla', 2022, 'ABC852', '#FF0000'),       
-('Honda', 'Civic', 2021, 'XYZ789', '#0000FF'),         
-('Ford', 'Focus', 2023, 'DEF456', '#000000'),          
-('Chevrolet', 'Cruze', 2020, 'GHI789', '#FFFFFF'),     
-('Nissan', 'Sentra', 2022, 'JKL012', '#C0C0C0'),       
-('Mazda', '3', 2021, 'MNO345', '#008000'),             
-('Kia', 'Forte', 2020, 'PQR678', '#808080'),           
-('Hyundai', 'Elantra', 2022, 'STU901', '#FF0000'),     
-('BMW', '320i', 2021, 'VWX234', '#0000FF'),            
-('Audi', 'A4', 2023, 'YZA567', '#000000'),             
-('Mercedes-Benz', 'C-Class', 2020, 'BCD890', '#FFFFFF'),
-('Volkswagen', 'Golf', 2022, 'EFG123', '#C0C0C0'),     
-('Porsche', 'Cayenne', 2023, 'HIJ456', '#FFFF00'),     
-('Toyota', 'Yaris', 2021, 'KLM789', '#FF0000'),        
-('Honda', 'HR-V', 2022, 'NOP012', '#008000'),          
-('Chevrolet', 'Equinox', 2020, 'QRS345', '#0000FF'),   
-('Nissan', 'Altima', 2023, 'TUV678', '#808080'),       
-('Mazda', 'CX-5', 2022, 'WXY901', '#FFFFFF'),         
-('Kia', 'Sportage', 2021, 'ZAB234', '#000000');        
+INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Valor_Dia) VALUES
+('Toyota', 'Corolla', 2022, 'ABC123', '#FF0000', 25.00),
+('Toyota', 'Corolla', 2022, 'ABC852', '#FF0000', 25.00),
+('Honda', 'Civic', 2021, 'XYZ789', '#0000FF', 28.00),
+('Ford', 'Focus', 2023, 'DEF456', '#000000', 30.00),
+('Chevrolet', 'Cruze', 2020, 'GHI789', '#FFFFFF', 24.50),
+('Nissan', 'Sentra', 2022, 'JKL012', '#C0C0C0', 27.00),
+('Mazda', '3', 2021, 'MNO345', '#008000', 29.50),
+('Kia', 'Forte', 2020, 'PQR678', '#808080', 23.75),
+('Hyundai', 'Elantra', 2022, 'STU901', '#FF0000', 26.00),
+('BMW', '320i', 2021, 'VWX234', '#0000FF', 45.00),
+('Audi', 'A4', 2023, 'YZA567', '#000000', 48.00),
+('Mercedes-Benz', 'C-Class', 2020, 'BCD890', '#FFFFFF', 50.00),
+('Volkswagen', 'Golf', 2022, 'EFG123', '#C0C0C0', 27.50),
+('Porsche', 'Cayenne', 2023, 'HIJ456', '#FFFF00', 120.00),
+('Toyota', 'Yaris', 2021, 'KLM789', '#FF0000', 22.00),
+('Honda', 'HR-V', 2022, 'NOP012', '#008000', 32.00),
+('Chevrolet', 'Equinox', 2020, 'QRS345', '#0000FF', 34.50),
+('Nissan', 'Altima', 2023, 'TUV678', '#808080', 31.00),
+('Mazda', 'CX-5', 2022, 'WXY901', '#FFFFFF', 35.00),
+('Kia', 'Sportage', 2021, 'ZAB234', '#000000', 33.00);
+     
 
 
 INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES

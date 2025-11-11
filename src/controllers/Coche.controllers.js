@@ -36,10 +36,10 @@ export const obtenerCoche = async (req, res) => {
 // Registrar un nuevo coche
 export const registrarCoche = async (req, res) => {
   try {
-    const { marca, modelo, anio, placa, color } = req.body;
+    const { marca, modelo, anio, placa, color, valor_dia } = req.body;
     await pool.query(
-      'CALL InsertarCoche (?, ?, ?, ?, ?); ',
-      [marca, modelo, anio, placa, color],
+      'CALL InsertarCoche (?, ?, ?, ?, ?, ?);',
+      [marca, modelo, anio, placa, color, valor_dia],
     );
     res.status(201).json({ mensaje: 'Coche registrado exitosamente.' });
   } catch (error) {
@@ -87,11 +87,11 @@ export const eliminarCoche = async (req, res) => {
 export const actualizarCoche = async (req, res) => {
   try {
     const Id_Coche = req.params.Id_Coche;
-    const { marca, modelo, anio, placa, color } = req.body;
+    const { marca, modelo, anio, placa, color, valor_dia } = req.body;
 
     const [result] = await pool.query(
-      'CALL ActualizarCoche (?, ?, ?, ?, ?, ?);',
-      [Id_Coche, marca, modelo, anio, placa, color]
+      'CALL ActualizarCoche (?, ?, ?, ?, ?, ?, ?);',
+      [Id_Coche, marca, modelo, anio, placa, color, valor_dia]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({

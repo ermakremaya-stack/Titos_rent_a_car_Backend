@@ -52,7 +52,8 @@ CREATE TABLE Coche (
 CREATE TABLE Alquiler (
     Id_Alquiler INT PRIMARY KEY AUTO_INCREMENT,
     Fecha_Inicio DATETime NOT NULL,
-    Fecha_Fin DATETime NOT NULL
+    Fecha_Fin DATETime NOT NULL,
+    Estado ENUM ("En curso", "Cancelado", "En espera", "Finalizado")
 );
 
 -- Tabla Detalle_Alquiler
@@ -866,6 +867,7 @@ BEGIN
     WHERE Id_Coche = NEW.Id_Coche;
 END $$
 
+-- Cuando se registre un mantenimiento
 
 CREATE TRIGGER trg_Coche_En_Mantenimiento
 AFTER INSERT ON Detalle_Mantenimiento
@@ -878,7 +880,138 @@ END $$
 
 DELIMITER ;
 
--- ########################-Revisar si exiaten placas duplicadas-##########
+-- ###########################################################################
+
+
+-- Cuando se cancele un alquiler
+DELIMITER $$
+
+CREATE TRIGGER trg_actualizar_estado_coche_cancelado
+AFTER UPDATE ON Alquiler
+FOR EACH ROW
+BEGIN
+    -- Verifica si el alquiler cambió a "Cancelado"
+    IF NEW.Estado = 'Cancelado' THEN
+        -- Actualiza los coches asociados a ese alquiler a "Disponible"
+        UPDATE Coche
+        SET Estado = 'Disponible'
+        WHERE Id_Coche IN (
+            SELECT Id_Coche
+            FROM Detalle_Alquiler
+            WHERE Id_Alquiler = NEW.Id_Alquiler
+        );
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- ########################################################################
+
+-- Prevenir que se modifiquen los alquileres o detalles cancelados
+DELIMITER $$
+
+CREATE TRIGGER trg_prevenir_modificacion_cancelado
+BEFORE UPDATE ON Alquiler
+FOR EACH ROW
+BEGIN
+    IF OLD.Estado = ('Cancelado', 'Finalizado') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No se puede modificar un alquiler cancelado o finalizado.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_prevenir_insert_detalle_en_alquiler_cerrado
+BEFORE INSERT ON Detalle_Alquiler
+FOR EACH ROW
+BEGIN
+    DECLARE v_estado ENUM('En curso','Cancelado','En espera','Finalizado');
+
+    SELECT Estado INTO v_estado
+    FROM Alquiler
+    WHERE Id_Alquiler = NEW.Id_Alquiler;
+
+    IF v_estado IN ('Cancelado', 'Finalizado') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No se pueden agregar detalles a un alquiler cancelado o finalizado.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_prevenir_update_detalle_en_alquiler_cerrado
+BEFORE UPDATE ON Detalle_Alquiler
+FOR EACH ROW
+BEGIN
+    DECLARE v_estado ENUM('En curso','Cancelado','En espera','Finalizado');
+
+    SELECT Estado INTO v_estado
+    FROM Alquiler
+    WHERE Id_Alquiler = NEW.Id_Alquiler;
+
+    IF v_estado IN ('Cancelado', 'Finalizado') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No se pueden modificar detalles de un alquiler cancelado o finalizado.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- ###############################################################################
+
+-- Trigger para cambiar el estado del alquiler al insertar 
+DELIMITER $$
+
+CREATE TRIGGER trg_alquiler_estado_before_insert
+BEFORE INSERT ON Alquiler
+FOR EACH ROW
+BEGIN
+    DECLARE fecha_actual DATETIME;
+    SET fecha_actual = NOW();
+
+	IF (fecha_actual < NEW.Fecha_Inicio) THEN
+		SET NEW.Estado = 'En espera';
+	ELSEIF (fecha_actual BETWEEN NEW.Fecha_Inicio AND NEW.Fecha_Fin) THEN
+		SET NEW.Estado = 'En curso';
+	END IF;
+        
+END$$
+
+DELIMITER ;
+
+--  ##############################################################################
+-- -- Trigger para cambiar el estado del alquiler al actualizar 
+
+DELIMITER $$
+
+CREATE TRIGGER trg_alquiler_estado_before_update
+BEFORE UPDATE ON Alquiler
+FOR EACH ROW
+BEGIN
+    DECLARE fecha_actual DATETIME;
+    SET fecha_actual = NOW();
+
+    -- Solo se cambia automáticamente el estado del alquiler
+        IF (fecha_actual < NEW.Fecha_Inicio) THEN
+            SET NEW.Estado = 'En espera';
+        ELSEIF (fecha_actual BETWEEN NEW.Fecha_Inicio AND NEW.Fecha_Fin) THEN
+            SET NEW.Estado = 'En curso';
+        END IF;
+END$$
+
+DELIMITER ;
+
+
+
+-- ########################-Revisar si existen placas duplicadas-##########
 
 DELIMITER $$
 
@@ -948,9 +1081,29 @@ BEGIN
 END$$
 DELIMITER ;
 
-SET GLOBAL event_scheduler = ON; #para activar los eventos en MySQL
-SHOW EVENTS; #mostrar todos los eventos creados en MySQL
+-- ################################################################################
+-- EVENTO QUE PONE EL ALQUILER EN FINALIZADO CUANDO LA FECHA FIN SEA INFERIOR AL ACTUAL
+DELIMITER $$
 
+CREATE EVENT ev_actualizar_alquiler_finalizado
+ON SCHEDULE EVERY 1 HOUR
+DO
+BEGIN
+    UPDATE Alquiler
+    SET Estado = 'Finalizado'
+    WHERE Fecha_Fin < NOW()
+      AND Estado NOT IN ('Cancelado', 'Finalizado');
+END$$
+
+DELIMITER ;
+
+
+-- Activamos los eventos
+
+#para activar los eventos en MySQL 
+SET GLOBAL event_scheduler = ON; 
+#mostrar todos los eventos creados en MySQL
+SHOW EVENTS; 
 
 
 -- ===========================CREAR USUARIOS=================================================================
@@ -1045,24 +1198,24 @@ INSERT INTO Alquiler (Fecha_Inicio, Fecha_Fin) VALUES
 
 INSERT INTO Detalle_Alquiler (Id_Alquiler, Id_Coche, Id_Usuario, Precio_Total) VALUES
 (1, 1, 1, 500.00),
-(2, 2, 2, 600.00),
-(3, 3, 3, 450.00),
-(4, 4, 4, 700.00),
-(5, 5, 5, 550.00),
-(6, 6, 6, 650.00),
-(7, 7, 7, 480.00),
-(8, 8, 8, 530.00),
-(9, 9, 9, 490.00),
-(10, 10, 10, 720.00),
+(2, 2, 1, 600.00),
+(3, 3, 1, 450.00),
+(4, 4, 1, 700.00),
+(5, 5, 1, 550.00),
+(6, 6, 1, 650.00),
+(7, 7, 1, 480.00),
+(8, 8, 1, 530.00),
+(9, 9, 1, 490.00),
+(10, 10, 1, 720.00),
 (11, 11, 1, 570.00),
-(12, 12, 2, 510.00),
-(13, 13, 3, 690.00),
-(14, 14, 4, 500.00),
-(15, 15, 5, 560.00),
-(16, 16, 6, 730.00),
-(17, 17, 7, 520.00),
-(18, 18, 8, 540.00),
-(19, 19, 9, 710.00);
+(12, 12, 1, 510.00),
+(13, 13, 1, 690.00),
+(14, 14, 1, 500.00),
+(15, 15, 1, 560.00),
+(16, 16, 1, 730.00),
+(17, 17, 1, 520.00),
+(18, 18, 1, 540.00),
+(19, 19, 1, 710.00);
 
 
 INSERT INTO Mantenimiento (Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, Costo) VALUES
@@ -1089,11 +1242,11 @@ INSERT INTO Mantenimiento (Descripcion, Justificacion, Fecha_Inicio, Fecha_Fin, 
 
 
 INSERT INTO Detalle_Mantenimiento (Id_Mantenimiento, Id_Empleado, Id_Coche, Observaciones, Recomendaciones, Partes_Cambiadas) VALUES
-(1, 1, 4, 'Cambio exitoso de aceite y filtro', 'Revisar cada 5,000 km', 'Aceite, Filtro de aceite'),
-(2, 2, 7, 'Sistema de frenos reemplazado', 'Verificar cada 3 meses', 'Pastillas de freno, Discos'),
-(3, 3, 9, 'Batería vieja reemplazada', 'Mantener bornes limpios', 'Batería'),
-(4, 4, 13, 'Sistema eléctrico inspeccionado', 'Revisar cada 6 meses', 'Cableado'),
-(5, 5, 19, 'Llantas nuevas instaladas', 'Rotar cada 10,000 km', '4 Llantas');
+(1, 1, 2, 'Cambio exitoso de aceite y filtro', 'Revisar cada 5,000 km', 'Aceite, Filtro de aceite'),
+(2, 2, 2, 'Sistema de frenos reemplazado', 'Verificar cada 3 meses', 'Pastillas de freno, Discos'),
+(3, 2, 2, 'Batería vieja reemplazada', 'Mantener bornes limpios', 'Batería'),
+(4, 2, 2, 'Sistema eléctrico inspeccionado', 'Revisar cada 6 meses', 'Cableado'),
+(5, 2, 2, 'Llantas nuevas instaladas', 'Rotar cada 10,000 km', '4 Llantas');
 
 -- =====================================================================================================
 /*
@@ -1156,3 +1309,18 @@ CALL Actualizar_Detalle_Alquiler(1, 3, 5, 6, 200.75);
 -- =========== EJEMPLO DE ELIMINAR ================ --
 CALL Eliminar_Detalle_Alquiler(2);
 */
+
+-- Lista de triggers
+SHOW TRIGGERS FROM BD_rentacar_G3;
+
+-- Lista de procedimientos almacenados
+SHOW PROCEDURE STATUS WHERE Db = 'BD_rentacar_G3';
+
+-- Lista de funciones
+SHOW FUNCTION STATUS WHERE Db = 'BD_rentacar_G3';
+
+-- Lista de vistas
+SHOW FULL TABLES IN BD_rentacar_G3 WHERE TABLE_TYPE = 'VIEW';
+
+-- Lista de eventos
+SHOW EVENTS FROM BD_rentacar_G3;

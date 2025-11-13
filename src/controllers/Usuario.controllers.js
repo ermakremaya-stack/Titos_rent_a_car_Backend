@@ -1,4 +1,5 @@
 import { pool } from '../../db_connection.js';
+import nodemailer from 'nodemailer';
 
 // Obtener todos lo usuario
 
@@ -152,4 +153,70 @@ export const eliminarUsuario = async (req, res) => {
             error: error
         });
     }
+};
+
+
+// ===== RECUPERAR CONTRASEÑA (AL FINAL DEL ARCHIVO) =====
+export const recuperarContrasena = async (req, res) => {
+  const { Email } = req.body;
+
+  if (!Email) {
+    return res.status(400).json({ success: false, message: "Falta el correo" });
+  }
+
+  try {
+    // 1. Buscar usuario
+    const [result] = await pool.query('SELECT * FROM Usuario WHERE Email = ?', [Email]);
+    if (result.length === 0) {
+      return res.status(404).json({ success: false, message: "Correo no encontrado" });
+    }
+
+    const usuario = result[0];
+
+    // 2. Generar nueva contraseña
+    const nuevaContrasena = Math.random().toString(36).slice(-8);
+
+    // 3. Actualizar en BD
+    await pool.query('UPDATE Usuario SET Contrasena = ? WHERE Email = ?', [nuevaContrasena, Email]);
+
+    // 4. Enviar email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
+    });
+
+    await transporter.sendMail({
+      from: '"TitosRentACar" <titosrentacar@gmail.com>',
+      to: Email,
+      subject: "Recuperación de Contraseña - TitosRentACar",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+          <h2 style="color: #8B4513; text-align: center;">Tito's Rent a Car</h2>
+          <h3>¡Hola, ${usuario.Nombre1}!</h3>
+          <p>Solicitaste recuperar tu contraseña. Aquí está tu nueva contraseña:</p>
+          <div style="background: #f0f0f0; padding: 15px; text-align: center; font-size: 18px; font-weight: bold; border-radius: 5px; margin: 20px 0;">
+            ${nuevaContrasena}
+          </div>
+          <p><strong>Recomendación:</strong> Inicia sesión y cámbiala por una segura.</p>
+          <p style="text-align: center;">
+            <a href="http://localhost:5173/inicio" style="background: #8B4513; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+              Ir al Login
+            </a>
+          </p>
+          <hr>
+          <p style="font-size: 12px; color: #777; text-align: center;">
+            Este es un mensaje automático. No respondas.
+          </p>
+        </div>
+      `
+    });
+
+    res.json({ success: true, message: "¡Contraseña enviada al correo!" });
+  } catch (error) {
+    console.error("Error al enviar email:", error);
+    res.status(500).json({ success: false, message: "Error al enviar email" });
+  }
 };

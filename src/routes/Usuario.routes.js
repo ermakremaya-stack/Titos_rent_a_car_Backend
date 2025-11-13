@@ -4,7 +4,8 @@ import { obtenerUsuario,
       crearUsuario,
        eliminarUsuario,
         actualizarUsuario,
-         loginUsuario} from '../controllers/Usuario.controllers.js';
+         loginUsuario,
+         recuperarContrasena} from '../controllers/Usuario.controllers.js';
 
 const router = Router();
 
@@ -17,6 +18,8 @@ router.get('/usuarios/:Id_Usuario', obtenerUsuarioPorId);
 
 router.post('/loginusuario', loginUsuario);
 
+router.post('/recuperar-contrasena', recuperarContrasena);
+
 //rutas para registrar un nuevo usuario
 router.post('/registrarusuarios', crearUsuario);
 
@@ -25,5 +28,10 @@ router.patch('/usuarios/:Id_Usuario', actualizarUsuario);
 
 //rutas para eliminar un usuario
 router.delete('/usuarios/:Id_Usuario', eliminarUsuario);
+
+//
+router.post('/recuperar-contrasena', recuperarContrasena);
+
+
 
 export default router;

@@ -1064,7 +1064,7 @@ DROP TRIGGER IF EXISTS trg_evitar_placa_duplicada;
 -- ==================================EVENTOS==================================
 -- Evento para actualizar coches que ya terminaron su alquiler
 DELIMITER $$
-CREATE EVENT actualizar_coches_terminados
+CREATE EVENT ev_actualizar_estado_coche
 ON SCHEDULE EVERY 1 HOUR
 STARTS CURRENT_TIMESTAMP
 DO

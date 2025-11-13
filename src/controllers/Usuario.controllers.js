@@ -32,6 +32,40 @@ export const obtenerUsuarioPorId = async (req, res) => {
         });
     } };
 
+
+
+
+    export const loginUsuario = async (req, res) => {
+    try {
+        const {Email, Contrasena} = req.body;
+        
+        const [result] = await pool.query('SELECT ROL, Email, Contrasena FROM Usuario WHERE Email = ? AND Contrasena = ?', [Email, Contrasena]);
+        if (result.length <= 0) {
+            return res.status(404).json({
+                mensaje: 'Usuario no encontrado.'
+            });
+        }
+
+        // Validar que vengan
+        if (!Email || !Contrasena) {
+            return res.status(400).json({
+                success: false,
+                message: "Faltan correo o contraseña"
+            });
+        }
+        res.json(result[0]);
+    } catch (error) {
+        return res.status(500).json({
+            mensaje: 'Ha ocurrido un error al leer los datos.',
+            error: error
+        });
+    } };
+
+
+
+
+
+
 // Crear nueva usuario
 export const crearUsuario = async (req, res) => {
     try {

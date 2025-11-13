@@ -53,7 +53,7 @@ CREATE TABLE Alquiler (
     Id_Alquiler INT PRIMARY KEY AUTO_INCREMENT,
     Fecha_Inicio DATETime NOT NULL,
     Fecha_Fin DATETime NOT NULL,
-    Estado ENUM ("En curso", "Cancelado", "En espera", "Finalizado")
+    Estado ENUM ("En curso", "Cancelado", "En espera", "Finalizado") DEFAULT "En curso"
 );
 
 -- Tabla Detalle_Alquiler
@@ -1072,13 +1072,18 @@ BEGIN
     UPDATE Coche c
     JOIN Detalle_Alquiler da ON c.Id_Coche = da.Id_Coche
     JOIN Alquiler a ON da.Id_Alquiler = a.Id_Alquiler
-    JOIN Detalle_Mantenimiento dm ON c.Id_Coche = dm.Id_Coche 
-    JOIN Mantenimiento m ON dm.Id_Mantenimiento = m.Id_Manteniento
-    
     SET c.Estado = 'Disponible'
-    WHERE a.Fecha_Fin < NOW() OR m.Fecha_Fin < NOW()
-    AND c.Estado = 'En Alquiler' OR c.Estado = "En Mantenimiento";
-END$$
+    WHERE a.Fecha_Fin < NOW()
+      AND c.Estado = 'En Alquiler';
+
+    UPDATE Coche c
+    JOIN Detalle_Mantenimiento dm ON c.Id_Coche = dm.Id_Coche
+    JOIN Mantenimiento m ON dm.Id_Mantenimiento = m.Id_Mantenimiento
+    SET c.Estado = 'Disponible'
+    WHERE m.Fecha_Fin < NOW()
+      AND c.Estado = 'En Mantenimiento';
+END;
+
 DELIMITER ;
 
 -- ################################################################################
@@ -1089,14 +1094,18 @@ CREATE EVENT ev_actualizar_alquiler_finalizado
 ON SCHEDULE EVERY 1 HOUR
 DO
 BEGIN
-    UPDATE Alquiler
-    SET Estado = 'Finalizado'
-    WHERE Fecha_Fin < NOW()
-      AND Estado NOT IN ('Cancelado', 'Finalizado');
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE Alquiler
+SET Estado = 'Finalizado'
+WHERE Fecha_Fin < NOW()
+  AND Estado = 'En curso';
+
+SET SQL_SAFE_UPDATES = 1;
+
 END$$
 
 DELIMITER ;
-
 
 -- Activamos los eventos
 

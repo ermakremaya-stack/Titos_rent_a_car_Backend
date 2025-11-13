@@ -53,7 +53,7 @@ CREATE TABLE Alquiler (
     Id_Alquiler INT PRIMARY KEY AUTO_INCREMENT,
     Fecha_Inicio DATETime NOT NULL,
     Fecha_Fin DATETime NOT NULL,
-    Estado ENUM ("En curso", "Cancelado", "En espera", "Finalizado") DEFAULT "En curso"
+    Estado ENUM ("En curso", "Cancelado", "En espera", "Finalizado")
 );
 
 -- Tabla Detalle_Alquiler
@@ -1094,26 +1094,21 @@ CREATE EVENT ev_actualizar_alquiler_finalizado
 ON SCHEDULE EVERY 1 HOUR
 DO
 BEGIN
-SET SQL_SAFE_UPDATES = 0;
-
 UPDATE Alquiler
 SET Estado = 'Finalizado'
 WHERE Fecha_Fin < NOW()
   AND Estado = 'En curso';
-
-SET SQL_SAFE_UPDATES = 1;
-
 END$$
 
 DELIMITER ;
 
 -- Activamos los eventos
-
+/*
 #para activar los eventos en MySQL 
 SET GLOBAL event_scheduler = ON; 
 #mostrar todos los eventos creados en MySQL
 SHOW EVENTS; 
-
+*/
 
 -- ===========================CREAR USUARIOS=================================================================
 DROP ROLE IF EXISTS "Usuario";

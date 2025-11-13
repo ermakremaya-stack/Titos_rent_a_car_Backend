@@ -34,33 +34,38 @@ export const obtenerUsuarioPorId = async (req, res) => {
 
 
 
-
-    export const loginUsuario = async (req, res) => {
+export const loginUsuario = async (req, res) => {
     try {
-        const {Email, Contrasena} = req.body;
-        
-        const [result] = await pool.query('SELECT ROL, Email, Contrasena FROM Usuario WHERE Email = ? AND Contrasena = ?', [Email, Contrasena]);
-        if (result.length <= 0) {
-            return res.status(404).json({
-                mensaje: 'Usuario no encontrado.'
-            });
-        }
+        const { Email, Contrasena } = req.body;  // ← VIENE DEL BODY
 
-        // Validar que vengan
-        if (!Email || !Contrasena) {
-            return res.status(400).json({
+        const [result] = await pool.query(
+            'SELECT Id_Usuario, Nombre1, Apellido1, Email, ROL FROM Usuario WHERE Email = ? AND Contrasena = ?',
+            [Email, Contrasena]
+        );
+
+        if (result.length === 0) {
+            return res.status(401).json({
                 success: false,
-                message: "Faltan correo o contraseña"
+                message: "Usuario o contraseña incorrectos"
             });
         }
-        res.json(result[0]);
-    } catch (error) {
-        return res.status(500).json({
-            mensaje: 'Ha ocurrido un error al leer los datos.',
-            error: error
-        });
-    } };
 
+        const usuario = result[0];
+
+        res.json({
+            success: true,
+            usuario: {
+                id: usuario.Id_Usuario,
+                nombre: `${usuario.Nombre1} ${usuario.Apellido1}`,
+                email: usuario.Email,
+                rol: usuario.ROL
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Error" });
+    }
+};
 
 
 

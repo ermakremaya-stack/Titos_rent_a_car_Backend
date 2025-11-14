@@ -5,7 +5,8 @@ import {
   obtenerEmpleado, 
   registrarEmpleado, 
   eliminarEmpleado, 
-  actualizarEmpleado 
+  actualizarEmpleado,
+  loginEmpleado
 } from '../controllers/Empleado.controllers.js';
 
 const router = Router();
@@ -14,6 +15,7 @@ const router = Router();
 // Recomendado: /empleados (RESTful)
 router.get('/empleados', obtenerEmpleados);           // ← Cambiado
 router.get('/empleados/:Id_Empleado', obtenerEmpleado);
+router.post('/loginempleado', loginEmpleado);
 router.post('/registrarEmpleado', registrarEmpleado);
 router.delete('/empleados/:Id_Empleado', eliminarEmpleado);     // ← Cambiado
 router.patch('/empleados/:Id_Empleado', actualizarEmpleado);   // ← Cambiado

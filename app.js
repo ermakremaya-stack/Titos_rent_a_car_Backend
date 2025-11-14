@@ -27,7 +27,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' })); //16 MB
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-//Rotas;
+//Rutas;
 app.use('/api', rutasAlquiler);
 app.use('/api', rutasUsuario);
 app.use('/api', rutasCoche);

@@ -1145,7 +1145,7 @@ WHERE account_locked = 'Y'  -- Roles están bloqueados (no pueden loguearse)
 
 -- =================================INSERTS===========================================
 INSERT INTO Usuario (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena) VALUES
-('001-010101-0000A', 'Juan', 'Miguel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'maycolsekee@gmail.com', 'LIC-001', 'juan123');
+('001-010101-0000A', 'Maycol', 'Daniel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'maycolsekee@gmail.com', 'LIC-001', 'juan123');
 
 
 INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES

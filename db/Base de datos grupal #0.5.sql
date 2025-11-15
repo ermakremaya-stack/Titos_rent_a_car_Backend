@@ -24,7 +24,7 @@ CREATE TABLE Empleado (
     Rol ENUM ("Administrador", "Mecánico", "Agente de alquiler"),
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
-    Nombre2 VARCHAR(50) not null,
+    Nombre2 VARCHAR(50),
     Apellido1 VARCHAR(50) NOT NULL,
     Apellido2 VARCHAR(50),
     Direccion VARCHAR(150) NOT NULL,

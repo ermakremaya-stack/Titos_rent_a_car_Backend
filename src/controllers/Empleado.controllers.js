@@ -36,6 +36,7 @@ export const obtenerEmpleado = async (req, res) => {
 export const registrarEmpleado = async (req, res) => {
   try {
     const {
+      Rol,
       Cedula,
       Nombre1,
       Nombre2,
@@ -46,8 +47,9 @@ export const registrarEmpleado = async (req, res) => {
       Contrasena
     } = req.body;
     const [result] = await pool.query(
-      'INSERT INTO Empleado (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [Cedula,
+      'INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [ Rol,
+        Cedula,
         Nombre1,
         Nombre2,
         Apellido1,
@@ -88,11 +90,11 @@ export const eliminarEmpleado = async (req, res) => {
 export const actualizarEmpleado = async (req, res) => {
   try {
     const Id_Empleado = req.params.Id_Empleado;
-    const { Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena } = req.body;
+    const {Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena } = req.body;
 
     const [result] = await pool.query(
-      'UPDATE Empleado SET Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ?, Contrasena = ? WHERE Id_Empleado = ?',
-      [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena, Id_Empleado]
+      'UPDATE Empleado SET Rol = ?, Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ?, Contrasena = ? WHERE Id_Empleado = ?',
+      [Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena, Id_Empleado]
     );
     if (result.affectedRows === 0) {
       return res.status(404).json({

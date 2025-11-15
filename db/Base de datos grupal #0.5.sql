@@ -15,7 +15,7 @@ CREATE TABLE Usuario (
     Direccion TEXT NOT NULL,
     Email VARCHAR(100) UNIQUE,
     Licencia VARCHAR (8) NOT NULL,
-    Contrasena VARCHAR (20) NOT NULL
+    Contrasena VARCHAR (255) NOT NULL
 );
 
 -- Tabla Empleado
@@ -1111,47 +1111,60 @@ SHOW EVENTS;
 */
 
 -- ===========================CREAR USUARIOS=================================================================
-DROP ROLE IF EXISTS "Usuario";
-CREATE ROLE "Usuario";
+DROP ROLE IF EXISTS "Usuario"@'localhost';
+CREATE ROLE "Usuario"@'localhost';
 
-DROP ROLE IF EXISTS "Administrador";
-CREATE ROLE "Administrador";
+DROP ROLE IF EXISTS "Administrador"@'localhost';
+CREATE ROLE "Administrador"@'localhost';
 
-DROP ROLE IF EXISTS "Mecánico";
-CREATE ROLE "Mecánico";
+DROP ROLE IF EXISTS "Mecánico"@'localhost';
+CREATE ROLE "Mecánico"@'localhost';
 
-DROP ROLE IF EXISTS "Agente de alquiler";
-CREATE ROLE "Agente de alquiler";
+DROP ROLE IF EXISTS "Agente de alquiler"@'localhost';
+CREATE ROLE "Agente de alquiler"@'localhost';
 
-GRANT SELECT, INSERT ON Alquiler TO "Usuario";
-GRANT SELECT, INSERT ON Detalle_Alquiler TO "Usuario";
+GRANT SELECT, INSERT ON Alquiler TO "Usuario"@'localhost';
+GRANT SELECT, INSERT ON Detalle_Alquiler TO "Usuario"@'localhost';
 
-GRANT ALL PRIVILEGES ON *.* TO "Administrador";
+GRANT ALL PRIVILEGES ON *.* TO "Administrador"@'localhost';
 
-GRANT SELECT, INSERT, UPDATE ON Mantenimiento TO "Mecánico";
-GRANT SELECT, INSERT, UPDATE ON Detalle_Mantenimiento TO "Mecánico";
+GRANT SELECT, INSERT, UPDATE ON Mantenimiento TO "Mecánico"@'localhost';
+GRANT SELECT, INSERT, UPDATE ON Detalle_Mantenimiento TO "Mecánico"@'localhost';
 
-GRANT SELECT, INSERT, UPDATE ON Alquiler TO "Agente de alquiler";
-GRANT SELECT, INSERT, UPDATE ON Detalle_Alquiler TO "Agente de alquiler";
+GRANT SELECT, INSERT, UPDATE ON Alquiler TO "Agente de alquiler"@'localhost';
+GRANT SELECT, INSERT, UPDATE ON Detalle_Alquiler TO "Agente de alquiler"@'localhost';
 
-/*  comnados para corrovorar la existencia de roles
-SELECT user, host 
-FROM mysql.user 
-WHERE account_locked = 'Y'  -- Roles están bloqueados (no pueden loguearse)
-  AND user IN ('Usuario', 'Administrador', 'Mecánico', 'Agente de alquiler');
-  */
+-- Creamos usuarios con los permisos correspondientes
+DROP USER IF EXISTS 'Ermakremaya'@'localhost';
+CREATE USER 'Ermakremaya'@'localhost' IDENTIFIED BY 'ermakremaya123';
+GRANT 'Administrador'@'localhost' TO "Ermakremaya"@'localhost';
+
+
+DROP USER IF EXISTS 'Maycol'@'localhost';
+CREATE USER 'Maycol'@'localhost' IDENTIFIED BY 'maycol123';
+GRANT 'Usuario'@'localhost' TO 'Maycol'@'localhost';
+
+DROP USER IF EXISTS 'Maryina'@'localhost';
+CREATE USER 'Maryina'@'localhost' IDENTIFIED BY 'maryina123';
+GRANT 'Agente de alquiler'@'localhost' TO 'Maryina'@'localhost';
+
+
+DROP USER IF EXISTS 'Kreivin'@'localhost';
+CREATE USER 'Kreivin'@'localhost' IDENTIFIED BY 'kreivin123';
+GRANT 'Mecánico'@'localhost' TO 'Kreivin'@'localhost';
+
 -- ##################################-Pruebas de ejecucion-#######################
 
 
 -- =================================INSERTS===========================================
 INSERT INTO Usuario (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena) VALUES
-('001-010101-0000A', 'Maycol', 'Daniel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'maycolsekee@gmail.com', 'LIC-001', 'juan123');
+('001-010101-0000A', 'Maycol', 'Daniel', 'Perez', 'Sanchez', '12345678', 'Calle Falsa 123', 'maycolsekee@gmail.com', 'LIC-001', 'maycol123');
 
 
 INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES
 ('Administrador', '011-111111-0000K', 'Equipo de', 'Integrantes', 'Desarrollo', 'Increible', 'Calle Independencia 765', 'ermakremaya@gmail.com', 'ermakremaya123'),
-('Agente de alquiler', '012-121212-0000L', 'Sergio', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com', 'sergio123'),
-('Mecánico', '013-131313-0000M', 'Rosa', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'rosa123');
+('Agente de alquiler', '012-121212-0000L', 'Maryina', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com', 'maryina123'),
+('Mecánico', '013-131313-0000M', 'Kreivin', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'kreivin123');
 
 
 INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Valor_Dia) VALUES
@@ -1328,3 +1341,6 @@ SHOW FULL TABLES IN BD_rentacar_G3 WHERE TABLE_TYPE = 'VIEW';
 
 -- Lista de eventos
 SHOW EVENTS FROM BD_rentacar_G3;
+
+-- Mostrar derechos del usuarios
+#SHOW GRANTS FOR 'pachenco'@'localhost';

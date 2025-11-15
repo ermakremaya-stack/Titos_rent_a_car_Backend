@@ -30,7 +30,7 @@ CREATE TABLE Empleado (
     Direccion VARCHAR(150) NOT NULL,
     Email VARCHAR(150) UNIQUE,
     Fecha_Contratacion DATE NOT NULL DEFAULT (CURRENT_DATE()),
-    Contrasena VARCHAR (20) NOT NULL
+    Contrasena VARCHAR (250) NOT NULL
 );
 
 -- Tabla Coche
@@ -1111,47 +1111,27 @@ SHOW EVENTS;
 */
 
 -- ===========================CREAR USUARIOS=================================================================
-DROP ROLE IF EXISTS "Usuario"@'localhost';
-CREATE ROLE "Usuario"@'localhost';
+-- Crear rol
+DROP ROLE IF EXISTS 'Administrador'@'localhost';
+CREATE ROLE 'Administrador'@'localhost';
 
-DROP ROLE IF EXISTS "Administrador"@'localhost';
-CREATE ROLE "Administrador"@'localhost';
+-- Otorgarle permisos al rol
+GRANT USAGE ON *.* TO 'Administrador'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON BD_rentacar_G3.* TO 'Administrador'@'localhost';
 
-DROP ROLE IF EXISTS "Mecánico"@'localhost';
-CREATE ROLE "Mecánico"@'localhost';
+FLUSH PRIVILEGES;
 
-DROP ROLE IF EXISTS "Agente de alquiler"@'localhost';
-CREATE ROLE "Agente de alquiler"@'localhost';
-
-GRANT SELECT, INSERT ON Alquiler TO "Usuario"@'localhost';
-GRANT SELECT, INSERT ON Detalle_Alquiler TO "Usuario"@'localhost';
-
-GRANT ALL PRIVILEGES ON *.* TO "Administrador"@'localhost';
-
-GRANT SELECT, INSERT, UPDATE ON Mantenimiento TO "Mecánico"@'localhost';
-GRANT SELECT, INSERT, UPDATE ON Detalle_Mantenimiento TO "Mecánico"@'localhost';
-
-GRANT SELECT, INSERT, UPDATE ON Alquiler TO "Agente de alquiler"@'localhost';
-GRANT SELECT, INSERT, UPDATE ON Detalle_Alquiler TO "Agente de alquiler"@'localhost';
-
--- Creamos usuarios con los permisos correspondientes
+-- Crear usuario
 DROP USER IF EXISTS 'Ermakremaya'@'localhost';
 CREATE USER 'Ermakremaya'@'localhost' IDENTIFIED BY 'ermakremaya123';
-GRANT 'Administrador'@'localhost' TO "Ermakremaya"@'localhost';
 
+-- Asignar el rol al usuario
+GRANT 'Administrador'@'localhost' TO 'Ermakremaya'@'localhost';
 
-DROP USER IF EXISTS 'Maycol'@'localhost';
-CREATE USER 'Maycol'@'localhost' IDENTIFIED BY 'maycol123';
-GRANT 'Usuario'@'localhost' TO 'Maycol'@'localhost';
+-- Activar el rol por defecto para el usuario
+SET DEFAULT ROLE 'Administrador'@'localhost' TO 'Ermakremaya'@'localhost';
 
-DROP USER IF EXISTS 'Maryina'@'localhost';
-CREATE USER 'Maryina'@'localhost' IDENTIFIED BY 'maryina123';
-GRANT 'Agente de alquiler'@'localhost' TO 'Maryina'@'localhost';
-
-
-DROP USER IF EXISTS 'Kreivin'@'localhost';
-CREATE USER 'Kreivin'@'localhost' IDENTIFIED BY 'kreivin123';
-GRANT 'Mecánico'@'localhost' TO 'Kreivin'@'localhost';
+FLUSH PRIVILEGES;
 
 -- ##################################-Pruebas de ejecucion-#######################
 

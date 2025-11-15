@@ -1,4 +1,5 @@
 import { pool } from '../../db_connection.js';
+import bcrypt from 'bcrypt';
 
 // Obtener todas los empleado 
 
@@ -46,6 +47,11 @@ export const registrarEmpleado = async (req, res) => {
       Email,
       Contrasena
     } = req.body;
+
+    //Antes de ingresar datos hay que encriptar la contraseña
+    const saltRounds = 10; //Nivel de seguridad mas usado y recomendado
+    const contrasenaSegura = await bcrypt.hash(Contrasena, saltRounds); 
+
     const [result] = await pool.query(
       'INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [ Rol,
@@ -56,7 +62,7 @@ export const registrarEmpleado = async (req, res) => {
         Apellido2,
         Direccion,
         Email,
-        Contrasena]
+        contrasenaSegura]
     );
     res.status(201).json({ Id_Empleado: result.insertId });
   } catch (error) {
@@ -92,10 +98,35 @@ export const actualizarEmpleado = async (req, res) => {
     const Id_Empleado = req.params.Id_Empleado;
     const {Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena } = req.body;
 
-    const [result] = await pool.query(
-      'UPDATE Empleado SET Rol = ?, Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ?, Contrasena = ? WHERE Id_Empleado = ?',
-      [Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena, Id_Empleado]
-    );
+    let contrasenaSegura;
+
+    if (Contrasena) {
+      // Si hay una contraseña encriptarla
+      contrasenaSegura = await bcrypt.hash(Contrasena, 10);
+    }
+
+  // Luego en el UPDATE dinámico
+  const campos = [
+    Rol,
+    Cedula,
+    Nombre1,
+    Nombre2,
+    Apellido1,
+    Apellido2,
+    Direccion,
+    Email
+  ];
+
+  let sql = 'UPDATE Empleado SET Rol = ?, Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Direccion = ?, Email = ?';
+    if (contrasenaSegura) {
+      sql += ', Contrasena = ?';
+      campos.push(contrasenaSegura);
+    }
+  sql += ' WHERE Id_Empleado = ?';
+  campos.push(Id_Empleado);
+
+  const [result] = await pool.query(sql, campos);
+
     if (result.affectedRows === 0) {
       return res.status(404).json({
         mensaje: `Error al actualizar el empleado. El ID ${Id_Empleado} no fue encontrado.`
@@ -120,27 +151,57 @@ export const loginEmpleado = async (req, res) => {
   try {
     const { Email, Contrasena } = req.body;
 
+      //Aseguramos de mandar un mensaje para que el correo y la contraseña esten
+      if (!Email || !Contrasena) {
+        return res.status(400).json({
+          success: false,
+          message: "Faltan correo o contraseña"
+        });
+      } 
+
     const [result] = await pool.query(
-      'SELECT Id_Empleado, Nombre1, Apellido1, Email, ROL FROM Empleado WHERE Email = ? AND Contrasena = ?',
-      [Email, Contrasena]
+      'SELECT * FROM Empleado WHERE Email = ?',
+      [Email]
     );
 
     if (result.length === 0) {
       return res.status(401).json({
         success: false,
-        message: "Usuario o contraseña incorrectos"
+        message: "Correo o contraseña incorrectos"
       });
     }
 
     const empleado = result[0];
 
+    // Comprobamos la contraseña encriptada
+    let match = false;
+
+    const esEncriptada = empleado.Contrasena?.startsWith("$2b$") || empleado.Contrasena?.startsWith("$2a$");
+    if (esEncriptada) {
+      match = await bcrypt.compare(Contrasena, empleado.Contrasena);
+    }
+
+    // Si no coincide con hash, comparamos con texto plano (para desarrollo o datos antiguos)
+    if (!match && empleado.Contrasena === Contrasena) {
+      match = true;
+    }
+
+
+    if (!match) {
+      return res.status(401).json({
+        success: false,
+        message: "Correo o contraseña incorrectos"
+      });
+    }
+
+    
     res.json({
       success: true,
       usuario: {
         id: empleado.Id_Empleado,
         nombre: `${empleado.Nombre1} ${empleado.Apellido1}`,
         email: empleado.Email,
-        rol: empleado.ROL
+        rol: empleado.Rol
       }
     });
 

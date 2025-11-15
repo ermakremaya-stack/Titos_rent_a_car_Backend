@@ -124,17 +124,6 @@ export const crearUsuario = async (req, res) => {
       [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, hashedPassword]
     );
 
-    // 3. Generar nombre de usuario MySQL
-    const username = Email.split('@')[0].toLowerCase();
-
-    // 4. Crear usuario MySQL
-    await pool.query(`DROP USER IF EXISTS '${username}'@'localhost'`);
-    await pool.query(`CREATE USER '${username}'@'localhost' IDENTIFIED BY ?`, [Contrasena]);
-
-    // 5. Asignar rol
-    await pool.query(`GRANT 'Usuario'@'localhost' TO '${username}'@'localhost'`);
-    await pool.query(`FLUSH PRIVILEGES`);
-
     res.json({ 
       success: true, 
       message: "Usuario creado con éxito", 

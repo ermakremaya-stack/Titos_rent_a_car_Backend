@@ -1163,8 +1163,8 @@ INSERT INTO Usuario (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, D
 
 INSERT INTO Empleado (Rol, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Direccion, Email, Contrasena) VALUES
 ('Administrador', '011-111111-0000K', 'Equipo de', 'Integrantes', 'Desarrollo', 'Increible', 'Calle Independencia 765', 'ermakremaya@gmail.com', 'ermakremaya123'),
-('Agente de alquiler', '012-121212-0000L', 'Maryina', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'sergio.torres@email.com', 'maryina123'),
-('Mecánico', '013-131313-0000M', 'Kreivin', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'rosa.jimenez@email.com', 'kreivin123');
+('Agente de alquiler', '012-121212-0000L', 'Maryina', 'Alejandro', 'Torres', 'Santos', 'Avenida del Sol 876', 'maryina@gmail.com', 'maryina123'),
+('Mecánico', '013-131313-0000M', 'Kreivin', 'Beatriz', 'Jimenez', 'Diaz', 'Calle de los Pinos 987', 'kreivin@gmail.com', 'kreivin123');
 
 
 INSERT INTO Coche (Marca, Modelo, Anio, Placa, Color, Valor_Dia) VALUES

@@ -39,21 +39,49 @@ export const obtenerUsuarioPorId = async (req, res) => {
 
 export const loginUsuario = async (req, res) => {
   try {
-    const { Email, Contrasena } = req.body;  // ← VIENE DEL BODY
+    const { Email, Contrasena } = req.body;  
+
+    //Aseguramos de mandar un mensaje para que el correo y la contraseña esten
+    if (!Email || !Contrasena) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Faltan correo o contraseña" 
+    });
+  }
 
     const [result] = await pool.query(
-      'SELECT Id_Usuario, Nombre1, Apellido1, Email, ROL FROM Usuario WHERE Email = ? AND Contrasena = ?',
-      [Email, Contrasena]
+      'SELECT * FROM Usuario WHERE Email = ?',
+      [Email]
     );
 
     if (result.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: "Usuario o contraseña incorrectos"
+      return res.status(401).json({ 
+        success: false, 
+        message: "Correo o contraseña incorrectos" 
       });
     }
 
     const usuario = result[0];
+
+    // HÍBRIDO: INTENTAR CON BCRYPT, SI FALLA → TEXTO SIMPLE
+    let match = false;
+
+    const esEncriptada = usuario.Contrasena?.startsWith("$2b$") || usuario.Contrasena?.startsWith("$2a$");
+    if (esEncriptada){
+      match = await bcrypt.compare(Contrasena, usuario.Contrasena);
+    }
+
+    // 2. SI NO → COMPARAR TEXTO PLANO
+    if (!match && usuario.Contrasena === Contrasena) {
+      match = true;
+    }
+
+    if (!match) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Correo o contraseña incorrectos" 
+      });
+    }
 
     res.json({
       success: true,

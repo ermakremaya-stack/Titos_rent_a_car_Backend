@@ -5,7 +5,7 @@ USE BD_rentacar_G3;
 -- Tabla Cliente
 CREATE TABLE Usuario (
     Id_Usuario INT PRIMARY KEY AUTO_INCREMENT,
-    ROL ENUM('Usuario') DEFAULT "Usuario",
+    Rol ENUM('Usuario') DEFAULT "Usuario",
     Cedula VARCHAR (16) NOT NULL,
     Nombre1 VARCHAR(50) NOT NULL,
     Nombre2 VARCHAR(50),

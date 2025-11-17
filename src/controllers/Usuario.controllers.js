@@ -119,8 +119,8 @@ export const crearUsuario = async (req, res) => {
     // 2. Insertar en tabla Usuario (Rol fijo: "Usuario")
     const [result] = await pool.query(
       `INSERT INTO Usuario 
-      (ROL, Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena) 
-      VALUES ('Usuario', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, hashedPassword]
     );
 
@@ -139,14 +139,20 @@ export const crearUsuario = async (req, res) => {
   }
 };
 
+
+
+
 // Actualizar usuario por ID 
 export const actualizarUsuario = async (req, res) => {
   try {
     const Id_Usuario = req.params.Id_Usuario;
-    const { Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena } = req.body;
+    const { Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena } = req.body;
+
+    const contrasenaSegura = await bcrypt.hash(Contrasena, 10);
+
     const [result] = await pool.query(
-      'UPDATE Usuario SET Cedula = ?, Rol = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Telefono = ?, Direccion = ?, Email = ?, Licencia = ?, Contrasena = ? WHERE Id_Usuario = ?',
-      [Cedula, Rol, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, Contrasena, Id_Usuario]);
+      'UPDATE Usuario SET Cedula = ?, Nombre1 = ?, Nombre2 = ?, Apellido1 = ?, Apellido2 = ?, Telefono = ?, Direccion = ?, Email = ?, Licencia = ?, Contrasena = ? WHERE Id_Usuario = ?',
+      [Cedula, Nombre1, Nombre2, Apellido1, Apellido2, Telefono, Direccion, Email, Licencia, contrasenaSegura, Id_Usuario]);
     if (result.affectedRows === 0) {
       return res.status(404).json({
         mensaje: 'Usuario no encontrado.'
@@ -162,7 +168,6 @@ export const actualizarUsuario = async (req, res) => {
     });
   } res.json({
     Id_Usuario,
-    Rol,
     Cedula,
     Nombre1,
     Nombre2,
@@ -175,6 +180,8 @@ export const actualizarUsuario = async (req, res) => {
     Contrasena
   });
 };
+
+
 
 // Eliminar usuario por ID
 export const eliminarUsuario = async (req, res) => {

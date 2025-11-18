@@ -75,21 +75,18 @@ export const actualizarAlquiler = async (req, res) => {
         const { fecha_inicio, fecha_fin } = req.body;
 
         const [result] = await pool.query(
-            'Call ',
+            'UPDATE Alquiler SET Fecha_Inicio = ?, Fecha_Fin = ? WHERE Id_Alquiler = ?',
             [fecha_inicio, fecha_fin, Id_Alquiler]
         );
+
         if (result.affectedRows === 0) {
-            return res.status(404).json({
-                mensaje: `Error al actualizar el alquiler. El ID ${Id_Alquiler} no fue encontrado.`
-            });
+            return res.status(404).json({ mensaje: `ID ${Id_Alquiler} no encontrado` });
         }
-        res.status(200).json({
-            mensaje: `Alquiler con ID ${Id_Alquiler} actualizado exitosamente.`
-        });
+
+        res.status(200).json({ mensaje: "Alquiler actualizado correctamente" });
     } catch (error) {
-        return res.status(500).json({
-            mensaje: "Ha ocurrido un error al actualizar el alquiler.",
-            error: error
-        });
+        return res.status(500).json({ mensaje: "Error al actualizar el alquiler", error: error.message });
     }
 };
+
+

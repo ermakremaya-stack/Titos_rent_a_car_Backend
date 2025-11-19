@@ -1,18 +1,27 @@
 import { Router } from 'express';
-import { obtenerDetalle_Mantenimiento, obtenerDetalle_Mantenimientos, registrarDetalle_Mantenimiento, eliminarDetalle_Mantenimiento,actualizarDetalle_Mantenimiento } from '../controllers/Detalle_Mantenimiento.controllers.js';
+import {
+  obtenerDetalle_Mantenimientos,
+  obtenerDetalle_Mantenimiento,
+  registrarDetalle_Mantenimiento,
+  eliminarDetalle_Mantenimiento,
+  actualizarDetalle_Mantenimiento
+} from '../controllers/Detalle_Mantenimiento.controllers.js';
 
 const router = Router();
 
-// Rutas
-router.get('/Detalle_Mantenimiento', obtenerDetalle_Mantenimientos);
+// Obtener todos los detalles de mantenimiento
+router.get('/detalles-mantenimiento', obtenerDetalle_Mantenimientos);
 
-router.get('/Detalle_Mantenimiento/:Id_Detalle_Mantenimiento', obtenerDetalle_Mantenimiento);
+// Obtener un detalle de mantenimiento por ID
+router.get('/detalles-mantenimiento/:id', obtenerDetalle_Mantenimiento);
 
-router.delete('/eliminarDetalle_Mantenimiento/:Id_Detalle_Mantenimiento', eliminarDetalle_Mantenimiento);
+// Registrar detalle de mantenimiento
+router.post('/detalles-mantenimiento', registrarDetalle_Mantenimiento);
 
-router.patch('/actualizarDetalle_Mantenimiento/:Id_Detalle_Mantenimiento', actualizarDetalle_Mantenimiento);
-// Ruta para registrar una nueva Mantenimiento
-router.post('/Detalle_Mantenimiento', registrarDetalle_Mantenimiento);
+// Actualizar detalle de mantenimiento
+router.patch('/detalles-mantenimiento/:id', actualizarDetalle_Mantenimiento);
 
+// Eliminar detalle de mantenimiento
+router.delete('/detalles-mantenimiento/:id', eliminarDetalle_Mantenimiento);
 
 export default router;

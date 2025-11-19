@@ -1,23 +1,27 @@
 import { Router } from 'express';
-import { obtenerMantenimientos, obtenerMantenimiento, registrarMantenimiento, eliminarMantenimiento, actualizarMantenimiento} from '../controllers/Mantenimiento.controllers.js';
+import {
+  obtenerMantenimientos,
+  obtenerMantenimiento,
+  registrarMantenimiento,
+  eliminarMantenimiento,
+  actualizarMantenimiento
+} from '../controllers/Mantenimiento.controllers.js';
 
 const router = Router();
 
-// Ruta para obtener todas las Mantenimiento
-router.get('/Mantenimientos', obtenerMantenimientos);
+// Obtener todos los mantenimientos
+router.get('/mantenimientos', obtenerMantenimientos);
 
-// ruta para obtener una Mantenimiento por su ID
-router.get('/Mantenimiento/:Id', obtenerMantenimiento);
+// Obtener un mantenimiento por ID
+router.get('/mantenimientos/:id', obtenerMantenimiento);
 
-// Ruta para registrar una nueva Mantenimiento
-router.post('/Mantenimiento', registrarMantenimiento);
+// Registrar un nuevo mantenimiento
+router.post('/mantenimientos', registrarMantenimiento);
 
-// ruta para eliminar una Mantenimiento por ID
-router.delete('/Mantenimiento/:Id_Mantenimiento', eliminarMantenimiento);
+// Eliminar un mantenimiento por ID
+router.delete('/mantenimientos/:id', eliminarMantenimiento);
 
-// Ruta para actualizar una Mantenimiento por su ID
-router.patch('/actualizarMantenimiento/:Id_Mantenimiento', actualizarMantenimiento);
+// Actualizar un mantenimiento por ID
+router.patch('/mantenimientos/:id', actualizarMantenimiento);
 
 export default router;
-
-

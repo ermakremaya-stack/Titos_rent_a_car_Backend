@@ -19,7 +19,7 @@ router.get('/mantenimientos/:id', obtenerMantenimiento);
 router.post('/mantenimientos', registrarMantenimiento);
 
 // Eliminar un mantenimiento por ID
-router.delete('/mantenimientos/:id', eliminarMantenimiento);
+router.delete('/mantenimientos/:Id_Mantenimiento', eliminarMantenimiento);
 
 // Actualizar un mantenimiento por ID
 router.patch('/mantenimientos/:id', actualizarMantenimiento);
